@@ -1,0 +1,10 @@
+all-packages
+local
+all-packages.bak
+
+build.log
+*.png
+*.hp
+platform
+tags
+

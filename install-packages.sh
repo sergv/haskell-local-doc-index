@@ -10,19 +10,51 @@ set -u
 # propagate errors from all parts of pipes
 set -o pipefail
 
+set -e
+
 # Inputs
 
 root=$(cd "$(dirname "$0")" && pwd)
-pkg_db="$root/local/pkg-db.d"
+
+pkg_db_dir="$root/local/pkg-db.d"
+docs_dir="$root/docs"
+
+html_dir="html"
+# Dir with with children like ‘base-4.9.0.0/Data-Functor.html’.
+docs_html_dir="$docs_dir/$html_dir"
+mkdir -p "$docs_html_dir"
+
+# Dir with package db, libraries, shared files
+local="$root/local"
+
+ghc_docs_root="$(dirname "$(which ghc)")/../share/doc/ghc-8.0.2/html/libraries/"
 
 package_list="$root/package-list-unversioned"
 package_download_dir="$root/all-packages"
 
+# Packages for which no source on Hackage exists
+special_global_packages="rts|ghc"
+
+if [[ ! -d "$ghc_docs_root" ]]; then
+    echo "The ghc documentation directory does not exist: $ghc_docs_root" >&2
+    exit 1
+fi
+if [[ ! -f "$package_list" ]]; then
+    echo "The package list file does not exist: $package_list" >&2
+    exit 1
+fi
+
+# User input
+
 action="${1:-all}"
 
-if ! [[ "$action" = "all" || "$action" = "download" || "$action" = "install" ]]; then
+if ! [[ "$action" = "all" || "$action" = "install" || "$action" = "download" || "$action" = "update-tags" || "$action" = "generate-haddock-docs" ]]; then
     echo "Invalid action: $action." >&2
-    echo "Valid actions: install, download, all" >&2
+    echo "Valid actions: install, download, update-tags, generate-haddock-docs, all" >&2
+    echo "  install - create local package db and install packages from ‘$package_list’ into it, using the latest LTS stackage snapshot" >&2
+    echo "  download - get sources of all packages installed into local package db"
+    echo "  update-tags - regenerate tags file"
+    echo "  generate-haddock-docs - create offline documentation for installed packages"
 fi
 
 # Utils
@@ -34,17 +66,36 @@ function execVerbose {
 
 # Actions
 
-if [[ ! -d "$root/local" ]]; then
-    echo "Creating directory $root/local"
-    mkdir -p "$root/local"
+if [[ ! -d "$local" ]]; then
+    echo "Creating directory $local"
+    mkdir -p "$local"
 fi
 
-if [[ ! -d "$pkg_db" ]]; then
-    echo "Updating package db at $pkg_db"
-    ghc-pkg init "$pkg_db"
+# Create package db
+if [[ ! -d "$pkg_db_dir" ]]; then
+    echo "Creating package db at $pkg_db_dir"
+    ghc-pkg init "$pkg_db_dir"
 fi
 
+
+# Copy builtin docs
+if [[ "$action" = "install" || "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
+    echo "Populating '$docs_html_dir' with builtin documentatios"
+    for pkg in $(cd "$ghc_docs_root" && find . -maxdepth 1 -type d | sed -re "/^\.\/(rts)-[0-9.]*$/d"); do
+        if [[ "$pkg" != "." ]]; then
+            if [[ -d "$docs_html_dir/$pkg" ]]; then
+                echo "Skipping $pkg - documentation already present"
+            else
+                echo "Copying documentation for $pkg"
+                cp -r "$ghc_docs_root/$pkg" "$docs_html_dir"
+            fi
+        fi
+    done
+fi
+
+# Install packages
 if [[ "$action" = "install" || "$action" = "all" ]]; then
+    echo "Installing packages"
     global_packages_re=""
     for pkg in $(ghc-pkg list --global --simple-output); do
         unversioned="${pkg%-*}"
@@ -55,47 +106,63 @@ if [[ "$action" = "install" || "$action" = "all" ]]; then
         fi
     done
 
-    packages_to_install=$(grep -v -E "$global_packages_re" "$package_list" | xargs echo)
+    echo "global_packages_re = ${global_packages_re}"
+    packages_to_install=$(cat "$package_list" | awk '!/^ *--.*$/' | grep -v -E "^($global_packages_re)$" | xargs echo)
 
     if [[ ! -f cabal.config ]]; then
         echo "Updating cabal.config"
         wget https://www.stackage.org/lts/cabal.config
     fi
 
-    echo "Installing packages"
+    echo "Installing following packages"
     for pkg in ${packages_to_install}; do
         echo "- $pkg"
     done
 
-    execVerbose cabal install \
-                --prefix "$root/local" \
-                --package-db="$pkg_db" \
-                --disable-split-objs \
-                --enable-optimization=2 \
-                --enable-shared \
-                --disable-library-profiling \
-                --disable-profiling \
-                --disable-tests \
-                --disable-benchmarks \
-                --enable-documentation \
-                --haddock-hoogle \
-                --haddock-html \
-                --haddock-hyperlink-source \
-                --allow-newer=process \
-                --allow-newer=template-haskell \
-                -j1 \
-                --build-log=build.log \
-                $packages_to_install
-
+        # --haddock-hoogle \
+    execVerbose \
+        cabal install \
+        --prefix "$local" \
+        --docdir="$docs_html_dir/\$pkgid" \
+        --htmldir="$docs_html_dir/\$pkgid" \
+        --package-db="$pkg_db_dir" \
+        --disable-split-objs \
+        --enable-optimization=0 \
+        --enable-shared \
+        --disable-library-profiling \
+        --disable-profiling \
+        --disable-tests \
+        --disable-benchmarks \
+        --enable-documentation \
+        --haddock-hoogle \
+        --haddock-html \
+        --haddock-hyperlink-source \
+        "--haddock-html-location=../\$pkgid" \
+        --haddock-internal \
+        --haddock-hyperlink-source \
+        --allow-newer=process \
+        --allow-newer=time \
+        --allow-newer=diagrams-cairo \
+        --allow-newer=diagrams-lib \
+        --allow-newer=binary \
+        --allow-newer=haskell-src-exts \
+        --allow-newer=HUnit \
+        --allow-newer=pipes \
+        -j4 \
+        $packages_to_install
+        # --build-log=build.log \
 fi
 
-if [[ "$action" = "download" || "$action" = "all" ]]; then
+function get_packages {
+    ghc-pkg "${@}" list --simple-output | sed -e "s/ /\n/g" | sed -re "/^(${special_global_packages})-[0-9.]*$/d"
+}
 
+if [[ "$action" = "download" || "$action" = "all" ]]; then
     echo "Downloading package sources for indexing into $package_download_dir"
 
     mkdir -p "$package_download_dir"
 
-    for pkg in $(ghc-pkg --global --package-db "$pkg_db" list --simple-output); do
+    for pkg in $(get_packages --global --package-db "$pkg_db_dir"); do
         declare -a fs
         fs=( $(find "$package_download_dir" -maxdepth 1 -type d -name "${pkg}*") )
 
@@ -108,8 +175,45 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
             echo "Skipping $pkg"
         fi
     done
-
 fi
 
-exit 0
+if [[ "$action" = "update-tags" || "$action" = "all" ]]; then
+    echo "Updating tags"
+    time fast-tags -o "$root/tags" -v -R "$package_download_dir" --nomerge
+fi
+
+if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
+    mkdir -p "$docs_dir"
+
+    pushd "$docs_dir" >/dev/null
+        haddock_args=""
+        for interface_file in $(find "$docs_dir" -type f -name '*.haddock'); do
+            interface_file_rel="$(realpath --relative-to "$docs_dir" "$interface_file")"
+            echo "interface_file = ${interface_file_rel}"
+            html="$(dirname "$interface_file_rel")"
+            flag="--read-interface=${html},${interface_file_rel}"
+            #flag="--read-interface=file://${html},${interface_file_rel}"
+            # flag="--read-interface=${interface_file_rel}"
+            if [[ -z "$haddock_args" ]]; then
+                haddock_args="$flag"
+            else
+                haddock_args="$haddock_args $flag"
+            fi
+        done
+
+        echo "Running haddock"
+
+        # haddock=haddock
+        haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist/build/haddock/haddock
+        $haddock \
+            --verbosity=3 \
+            --pretty-html \
+            --gen-contents \
+            --gen-index \
+            --odir="$docs_dir" \
+            --title="Standalone Haskell Documentation" \
+            --hyperlinked-source \
+            $haddock_args
+    popd >/dev/null
+fi
 

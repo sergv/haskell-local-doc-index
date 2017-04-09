@@ -1,4 +1,3 @@
-
 abstract-deque
 abstract-par
 ad
@@ -45,7 +44,7 @@ data-accessor
 data-default-class
 data-reify
 deepseq
--- derive
+derive
 diagrams
 diagrams-cairo
 diagrams-canvas
@@ -64,9 +63,9 @@ distributed-process
 distributed-process-async
 distributed-process-client-server
 distributed-process-extras
-distributed-process-registry
+-- distributed-process-registry
 distributed-process-simplelocalnet
-distributed-process-task
+-- distributed-process-task
 distributed-process-tests
 distributed-static
 distributive
@@ -121,6 +120,7 @@ hspec-expectations
 HTTP
 HUnit
 ieee754
+IfElse
 integer-gmp
 kan-extensions
 language-c
@@ -135,6 +135,7 @@ linear
 logict
 markdown
 math-functions
+megaparsec
 MemoTrie
 microlens
 microlens-ghc
@@ -196,9 +197,11 @@ quickcheck-instances
 quickcheck-io
 random
 random-fu
+random-source
 rank1dynamic
 reactive-banana
 reactive-banana-wx
+recursion-schemes
 reducers
 reflection
 regex-base
@@ -209,6 +212,7 @@ regex-tdfa-text
 repa
 safe
 scientific
+sdl2
 semigroupoids
 semigroups
 set-extra
@@ -268,4 +272,5 @@ wxcore
 wxdirect
 xhtml
 xml
+Yampa
 zlib

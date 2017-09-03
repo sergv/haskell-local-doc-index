@@ -15,6 +15,7 @@ set -e
 # Inputs
 
 root=$(cd "$(dirname "$0")" && pwd)
+ghc_version="8.0.2"
 
 pkg_db_dir="$root/local/pkg-db.d"
 docs_dir="$root/docs"
@@ -27,7 +28,7 @@ mkdir -p "$docs_html_dir"
 # Dir with package db, libraries, shared files
 local="$root/local"
 
-ghc_docs_root="$(dirname "$(which ghc)")/../share/doc/ghc-8.0.2/html/libraries/"
+ghc_docs_root="$(dirname "$(which ghc)")/../share/doc/ghc-${ghc_version}/html/libraries/"
 
 package_list="$root/package-list-unversioned"
 package_download_dir="$root/all-packages"
@@ -119,9 +120,16 @@ if [[ "$action" = "install" || "$action" = "all" ]]; then
         echo "- $pkg"
     done
 
+    for prog in alex happy c2hs; do
+      if ! which "$prog"; then
+          echo "Cannot find program '$prog' within PATH" >&2
+          exit 1
+      fi
+    done
+
         # --haddock-hoogle \
     execVerbose \
-        cabal install \
+        cabal --no-require-sandbox install \
         --prefix "$local" \
         --docdir="$docs_html_dir/\$pkgid" \
         --htmldir="$docs_html_dir/\$pkgid" \
@@ -140,18 +148,35 @@ if [[ "$action" = "install" || "$action" = "all" ]]; then
         "--haddock-html-location=../\$pkgid" \
         --haddock-internal \
         --haddock-hyperlink-source \
-        --allow-newer=process \
-        --allow-newer=time \
+        -f new-base \
+        --allow-newer=base \
         --allow-newer=diagrams-cairo \
         --allow-newer=diagrams-lib \
-        --allow-newer=binary \
-        --allow-newer=haskell-src-exts \
-        --allow-newer=HUnit \
         --allow-newer=pipes \
-        -j4 \
+        --allow-newer=process \
+        --allow-newer=template-haskell \
+        --allow-newer=time \
+        --allow-newer=Cabal \
+        --allow-newer=HUnit \
+        --allow-newer=syb \
+        --allow-newer=QuickCheck \
+        --constraint="compdata == 0.11" \
+        -j5 \
         $packages_to_install
+        # --allow-newer=haskell-src-exts \
         # --build-log=build.log \
 fi
+
+        # --allow-newer=process \
+        # --allow-newer=diagrams-cairo \
+        # --allow-newer=diagrams-lib \
+        # --allow-newer=distributed-process-extras \
+        # --allow-newer=distributed-process \
+        # --allow-newer=distributed-process-client-server \
+        # --allow-newer=binary \
+        # --allow-newer=HUnit \
+        # --allow-newer=time \
+        # --allow-newer=pipes \
 
 function get_packages {
     ghc-pkg "${@}" list --simple-output | sed -e "s/ /\n/g" | sed -re "/^(${special_global_packages})-[0-9.]*$/d"

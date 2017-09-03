@@ -10,7 +10,7 @@ set -u
 # propagate errors from all parts of pipes
 set -o pipefail
 
-rm -vr all-packages/ local* docs.bak
+rm -vr all-packages/ local* docs.bak docs
 
 exit 0
 

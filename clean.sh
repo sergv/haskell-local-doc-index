@@ -10,7 +10,7 @@ set -u
 # propagate errors from all parts of pipes
 set -o pipefail
 
-rm -vr all-packages/ local* docs.bak docs
+rm -rf all-packages/ generated/ local* docs.bak docs dist-newstyle build.log cabal.project.local
 
 exit 0
 

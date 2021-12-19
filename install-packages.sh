@@ -15,9 +15,29 @@ set -e
 # Inputs
 
 root=$(cd "$(dirname "$0")" && pwd)
-ghc_version="8.0.2"
+ghc_version="$(ghc --numeric-version)"
+
+# cabal="cabal"
+cabal="./cabal-3.7-no-asserts"
+# cabal="/tmp/dist/build/x86_64-linux/ghc-8.10.7/cabal-install-3.7.0.0/x/cabal/build/cabal/cabal"
+
+# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.6.5/haddock-2.22.0/x/haddock/build/haddock/haddock
+# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.8.2/haddock-2.23.0/x/haddock/build/haddock/haddock
+haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.10.7/haddock-2.24.2/x/haddock/build/haddock/haddock
+
+# haddock=haddock
+# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist/build/haddock/haddock
+#haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.4.3/haddock-2.20.0/x/haddock/build/haddock/haddock
+# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/.stack-work/install/x86_64-linux-tinfo6/lts-12.5/8.4.3/bin/haddock
+# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/.stack-work/install/x86_64-linux-tinfo6/34770313da6adf360034370351a912936d6a0179f4945cf5366f5ad7eb1b662b/8.6.5/bin/haddoc
+
+haddock_theme_dir="/home/sergey/projects/haskell/projects/thirdparty/haddock/haddock-api/resources/html/Ocean.theme"
+# haddock_css="${haddock_theme_dir}/ocean.css"
+
+export haddock_api_datadir=/home/sergey/projects/haskell/projects/thirdparty/haddock/haddock-api/resources
 
 pkg_db_dir="$root/local/pkg-db.d"
+store_pkg_db_dir="local-store/ghc-${ghc_version}/package.db/"
 docs_dir="$root/docs"
 
 html_dir="html"
@@ -67,21 +87,21 @@ function execVerbose {
 
 # Actions
 
-if [[ ! -d "$local" ]]; then
-    echo "Creating directory $local"
-    mkdir -p "$local"
-fi
-
-# Create package db
-if [[ ! -d "$pkg_db_dir" ]]; then
-    echo "Creating package db at $pkg_db_dir"
-    ghc-pkg init "$pkg_db_dir"
-fi
+# if [[ ! -d "$local" ]]; then
+#     echo "Creating directory $local"
+#     mkdir -p "$local"
+# fi
+#
+# # Create package db
+# if [[ ! -d "$pkg_db_dir" ]]; then
+#     echo "Creating package db at $pkg_db_dir"
+#     ghc-pkg init "$pkg_db_dir"
+# fi
 
 
 # Copy builtin docs
 if [[ "$action" = "install" || "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
-    echo "Populating '$docs_html_dir' with builtin documentatios"
+    echo "Populating '$docs_html_dir' with builtin documentations"
     for pkg in $(cd "$ghc_docs_root" && find . -maxdepth 1 -type d | sed -re "/^\.\/(rts)-[0-9.]*$/d"); do
         if [[ "$pkg" != "." ]]; then
             if [[ -d "$docs_html_dir/$pkg" ]]; then
@@ -110,30 +130,112 @@ if [[ "$action" = "install" || "$action" = "all" ]]; then
     echo "global_packages_re = ${global_packages_re}"
     packages_to_install=$(cat "$package_list" | awk '!/^ *--.*$/' | grep -v -E "^($global_packages_re)$" | xargs echo)
 
-    if [[ ! -f cabal.config ]]; then
-        echo "Updating cabal.config"
-        wget https://www.stackage.org/lts/cabal.config
-    fi
-
     echo "Installing following packages"
     for pkg in ${packages_to_install}; do
         echo "- $pkg"
     done
 
-    for prog in alex happy c2hs; do
-      if ! which "$prog"; then
-          echo "Cannot find program '$prog' within PATH" >&2
-          exit 1
-      fi
-    done
+    mkdir -p generated
+
+    # for prog in alex happy c2hs; do
+    #   if ! which "$prog"; then
+    #       echo "Cannot find program '$prog' within PATH" >&2
+    #       exit 1
+    #   fi
+    # done
+    cat <<EOF >generated/depends-on-all.cabal
+cabal-version: 3.0
+
+name: depends-on-all
+version: 0.1
+synopsis: TODO
+description: TODO
+license: Apache-2.0
+author: Sergey Vinokurov
+maintainer: Sergey Vinokurov <serg.foo@gmail.com>
+
+build-type: Simple
+
+library
+  default-language: Haskell2010
+  build-depends:
+$(for pkg in ${packages_to_install}; do echo "    $pkg,"; done)
+EOF
+
+    # NB musts use -j1 to force non-parallel build. Parallel build will force use of ‘cabal act-as-setup’
+    # which will in turn ignore --haddock-css and other flags
+
+    # We’re fixing ocean.css definitions at the end anyway so it makes more sense to stick to the default linuwial
+    # which is used in base libraries as well and fix everything in the one go.
+  # haddock-css: $haddock_css
+    cat <<EOF >cabal.project.local
+package *
+  documentation: True
+  haddock-hyperlink-source: True
+  haddock-internal: True
+  haddock-html: True
+  haddock-hoogle: True
+  haddock-html-location: ../\$pkgid
+
+allow-newer:
+  containers,
+  Cabal,
+  HUnit,
+  QuickCheck,
+  SVGFonts,
+  base,
+  bifunctors,
+  conduit,
+  diagrams-cairo,
+  diagrams-lib,
+  distributed-process,
+  haskell-src-exts,
+  fgl,
+  free,
+  lens,
+  optparse-applicative,
+  pipes,
+  pqueue,
+  process,
+  syb,
+  template-haskell,
+  time,
+  aeson,
+  blank-canvas,
+  gtk,
+  stm,
+  haskell-gi-base,
+  haskell-gi,
+  mtl,
+  polyparse,
+  prettyprinter,
+  primitive,
+  regex-base,
+  regex-tdfa,
+  pandoc,
+  entropy,
+  diagrams-core,
+  sockets:byteslice
+
+EOF
+
+        # --prefix "$local" \
+        # --package-db="$pkg_db_dir" \
 
         # --haddock-hoogle \
+        # --haddock-html \
+        # --haddock-hyperlink-source \
+        # "--haddock-html-location=../\$pkgid" \
+        # --haddock-internal \
+        # --haddock-hyperlink-source \
+        # "--haddock-css=$haddock_css" \
+
+        # -f new-base \
+
     execVerbose \
-        cabal --no-require-sandbox install \
-        --prefix "$local" \
-        --docdir="$docs_html_dir/\$pkgid" \
-        --htmldir="$docs_html_dir/\$pkgid" \
-        --package-db="$pkg_db_dir" \
+        "$cabal" build \
+        -j4 \
+        --project-file "cabal.project" \
         --disable-split-objs \
         --enable-optimization=0 \
         --enable-shared \
@@ -142,41 +244,13 @@ if [[ "$action" = "install" || "$action" = "all" ]]; then
         --disable-tests \
         --disable-benchmarks \
         --enable-documentation \
-        --haddock-hoogle \
-        --haddock-html \
-        --haddock-hyperlink-source \
-        "--haddock-html-location=../\$pkgid" \
-        --haddock-internal \
-        --haddock-hyperlink-source \
-        -f new-base \
-        --allow-newer=base \
-        --allow-newer=diagrams-cairo \
-        --allow-newer=diagrams-lib \
-        --allow-newer=pipes \
-        --allow-newer=process \
-        --allow-newer=template-haskell \
-        --allow-newer=time \
-        --allow-newer=Cabal \
-        --allow-newer=HUnit \
-        --allow-newer=syb \
-        --allow-newer=QuickCheck \
-        --constraint="compdata == 0.11" \
-        -j5 \
-        $packages_to_install
-        # --allow-newer=haskell-src-exts \
+        --with-haddock="$haddock" \
+        depends-on-all
+        # $packages_to_install
         # --build-log=build.log \
-fi
+        # --ghc-options=-v3 \
 
-        # --allow-newer=process \
-        # --allow-newer=diagrams-cairo \
-        # --allow-newer=diagrams-lib \
-        # --allow-newer=distributed-process-extras \
-        # --allow-newer=distributed-process \
-        # --allow-newer=distributed-process-client-server \
-        # --allow-newer=binary \
-        # --allow-newer=HUnit \
-        # --allow-newer=time \
-        # --allow-newer=pipes \
+fi
 
 function get_packages {
     ghc-pkg "${@}" list --simple-output | sed -e "s/ /\n/g" | sed -re "/^(${special_global_packages})-[0-9.]*$/d"
@@ -187,11 +261,52 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
 
     mkdir -p "$package_download_dir"
 
-    for pkg in $(get_packages --global --package-db "$pkg_db_dir"); do
+    # for pkg in $(get_packages --global --package-db "$pkg_db_dir"); do
+    for pkg in $(get_packages --global --package-db "$store_pkg_db_dir"); do
         declare -a fs
+        if [[ "$pkg" == "ghc-boot-8.4.4" ]]; then
+            pkg="ghc-boot-8.4.3"
+        fi
+        if [[ "$pkg" == "ghc-boot-th-8.4.4" ]]; then
+            pkg="ghc-boot-th-8.4.3"
+        fi
+        if [[ "$pkg" == "ghci-8.4.4" ]]; then
+            pkg="ghci-8.4.3"
+        fi
+        if [[ "$pkg" == "ghc-boot-8.8.2" ]]; then
+            pkg="ghc-boot-8.8.1"
+        fi
+        if [[ "$pkg" == "ghc-boot-th-8.8.2" ]]; then
+            pkg="ghc-boot-th-8.8.1"
+        fi
+        if [[ "$pkg" == "ghci-8.8.2" ]]; then
+            pkg="ghci-8.6.5"
+        fi
+
+        if [[ "$pkg" == "base-4.13.0.0" ]]; then
+            pkg="base-4.12.0.0"
+        fi
+        if [[ "$pkg" == "bytestring-0.10.9.0" ]]; then
+            pkg="bytestring-0.10.10.0"
+        fi
+        if [[ "$pkg" == "Cabal-3.0.1.0" ]]; then
+            pkg="Cabal-3.0.0.0"
+        fi
+
+        if [[ "$pkg" == "ghc-boot-8.10.7" ]]; then
+            pkg="ghc-boot-9.2.1"
+        fi
+        if [[ "$pkg" == "ghc-boot-th-8.10.7" ]]; then
+            pkg="ghc-boot-th-8.10.2"
+        fi
+        if [[ "$pkg" == "hpc-0.6.1.0" ]]; then
+            pkg="hpc-0.6.0.3"
+        fi
+
+
         fs=( $(find "$package_download_dir" -maxdepth 1 -type d -name "${pkg}*") )
 
-        if [[ "${#fs[@]}" = 0 && ! -d "$pkg" ]]; then
+        if [[ "${#fs[@]}" = 0 && ! -d "$pkg" && "$pkg" != z-* && "$pkg" != ghc-heap-* && "$pkg" != libiserv-* && "$pkg" != ghci* ]]; then
             echo "Downloading $pkg"
             pushd "$package_download_dir" >/dev/null
             cabal get "$pkg"
@@ -210,27 +325,42 @@ fi
 if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
     mkdir -p "$docs_dir"
 
+
+    while IFS= read -d $'\0' -r interface_file ; do
+        echo "interface_file = ${interface_file}"
+        doc_dir="$(dirname "$interface_file")"
+        dir="$(dirname "$doc_dir")"
+        dir="$(dirname "$dir")"
+        dir="$(dirname "$dir")"
+        package_name="$(basename "$dir" | sed -re 's/-[a-z0-9]+$//')"
+
+        dest="$docs_html_dir/$package_name"
+        if [[ ! -d "$dest" ]]; then
+            cp -r "$doc_dir" "$dest"
+        fi
+    done < <(find "local-store/" -type f -name '*.haddock' -print0)
+
     pushd "$docs_dir" >/dev/null
         haddock_args=""
-        for interface_file in $(find "$docs_dir" -type f -name '*.haddock'); do
+
+        while IFS= read -d $'\0' -r interface_file ; do
             interface_file_rel="$(realpath --relative-to "$docs_dir" "$interface_file")"
-            echo "interface_file = ${interface_file_rel}"
             html="$(dirname "$interface_file_rel")"
             flag="--read-interface=${html},${interface_file_rel}"
             #flag="--read-interface=file://${html},${interface_file_rel}"
             # flag="--read-interface=${interface_file_rel}"
+
             if [[ -z "$haddock_args" ]]; then
                 haddock_args="$flag"
             else
                 haddock_args="$haddock_args $flag"
             fi
-        done
+        done < <(find "${docs_html_dir}" -type f -name '*.haddock' -print0)
 
         echo "Running haddock"
 
-        # haddock=haddock
-        haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist/build/haddock/haddock
-        $haddock \
+            # "--css=$haddock_css" \
+        "$haddock" \
             --verbosity=3 \
             --pretty-html \
             --gen-contents \
@@ -240,5 +370,24 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
             --hyperlinked-source \
             $haddock_args
     popd >/dev/null
+
+    # Fix linuwial that comes with haddocs for precompiled packages (e.g. base).
+    while IFS= read -d $'\0' -r css ; do
+
+        if [[ ! -h "$css" ]]; then
+            rm -f "$css"
+            ln -s "$haddock_theme_dir/ocean.css" "$css"
+        fi
+
+        for haddock_resource in hslogo-16.png minus.gif plus.gif synopsis.png; do
+            dest="$(dirname "$css")/$haddock_resource"
+            if [[ ! -h "$dest" ]]; then
+                rm -f "$dest"
+                ln -s "$haddock_theme_dir/$haddock_resource" "$dest"
+            fi
+        done
+
+    done < <(find "$docs_dir" -name 'linuwial.css' -print0)
+
 fi
 

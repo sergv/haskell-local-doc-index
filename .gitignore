@@ -1,10 +1,18 @@
-all-packages
+# all-packages
 local
 all-packages.bak
+portable-docs.bak
 
 build.log
 *.png
 *.hp
 platform
-tags
+# tags
 
+dist/
+dist-newstyle/
+
+local-store/
+cabal.project.local
+generated/
+tags

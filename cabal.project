@@ -1,0 +1,15 @@
+store-dir: local-store
+
+packages: generated/depends-on-all.cabal
+
+constraints:
+  Cabal installed,
+  packedstring == 0,
+  small-bytearray-builder >= 0.3.4,
+  ip >= 1.7.3,
+  aeson < 2,
+  diagrams-lib >= 1.4.4,
+  sockets >= 0.5.0.0,
+  -- sockets-0.5.0.0 is not compatible with posix-api-0.3.5.0
+  posix-api < 0.3.5.0
+

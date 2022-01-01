@@ -13,3 +13,55 @@ constraints:
   -- sockets-0.5.0.0 is not compatible with posix-api-0.3.5.0
   posix-api < 0.3.5.0
 
+package *
+  documentation: True
+  haddock-hyperlink-source: True
+  haddock-internal: True
+  haddock-html: True
+  haddock-hoogle: True
+  haddock-html-location: ../\$pkgid
+  -- We’re fixing ocean.css definitions at the end anyway so it makes
+  -- more sense to stick to the default linuwial which is used in base
+  -- libraries as well and fix everything in the one go.
+  -- haddock-css: $haddock_css
+
+allow-newer:
+  containers,
+  Cabal,
+  HUnit,
+  QuickCheck,
+  SVGFonts,
+  base,
+  bifunctors,
+  conduit,
+  diagrams-cairo,
+  diagrams-lib,
+  distributed-process,
+  haskell-src-exts,
+  fgl,
+  free,
+  lens,
+  optparse-applicative,
+  pipes,
+  pqueue,
+  process,
+  syb,
+  template-haskell,
+  time,
+  aeson,
+  blank-canvas,
+  gtk,
+  stm,
+  haskell-gi-base,
+  haskell-gi,
+  mtl,
+  polyparse,
+  prettyprinter,
+  primitive,
+  regex-base,
+  regex-tdfa,
+  pandoc,
+  entropy,
+  diagrams-core,
+  sockets:byteslice
+

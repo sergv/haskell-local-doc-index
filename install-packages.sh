@@ -162,63 +162,6 @@ library
 $(for pkg in ${packages_to_install}; do echo "    $pkg,"; done)
 EOF
 
-    # NB musts use -j1 to force non-parallel build. Parallel build will force use of ‘cabal act-as-setup’
-    # which will in turn ignore --haddock-css and other flags
-
-    # We’re fixing ocean.css definitions at the end anyway so it makes more sense to stick to the default linuwial
-    # which is used in base libraries as well and fix everything in the one go.
-  # haddock-css: $haddock_css
-    cat <<EOF >cabal.project.local
-package *
-  documentation: True
-  haddock-hyperlink-source: True
-  haddock-internal: True
-  haddock-html: True
-  haddock-hoogle: True
-  haddock-html-location: ../\$pkgid
-
-allow-newer:
-  containers,
-  Cabal,
-  HUnit,
-  QuickCheck,
-  SVGFonts,
-  base,
-  bifunctors,
-  conduit,
-  diagrams-cairo,
-  diagrams-lib,
-  distributed-process,
-  haskell-src-exts,
-  fgl,
-  free,
-  lens,
-  optparse-applicative,
-  pipes,
-  pqueue,
-  process,
-  syb,
-  template-haskell,
-  time,
-  aeson,
-  blank-canvas,
-  gtk,
-  stm,
-  haskell-gi-base,
-  haskell-gi,
-  mtl,
-  polyparse,
-  prettyprinter,
-  primitive,
-  regex-base,
-  regex-tdfa,
-  pandoc,
-  entropy,
-  diagrams-core,
-  sockets:byteslice
-
-EOF
-
         # --prefix "$local" \
         # --package-db="$pkg_db_dir" \
 
@@ -327,7 +270,7 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
 
 
     while IFS= read -d $'\0' -r interface_file ; do
-        echo "interface_file = ${interface_file}"
+        echo "Found interface file ${interface_file}"
         doc_dir="$(dirname "$interface_file")"
         dir="$(dirname "$doc_dir")"
         dir="$(dirname "$dir")"

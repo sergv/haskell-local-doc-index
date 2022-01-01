@@ -1,38 +1,34 @@
-abstract-deque
-abstract-par
+-- abstract-deque
+-- abstract-par
 ad
 adjunctions
 aeson
 aeson-compat
 aeson-pretty
-annotated-wl-pprint
 ansi-terminal
-ansi-wl-pprint
-appar
+-- appar
 array
-arrows
-asn1-encoding
-asn1-parse
-asn1-types
+-- arrows
 async
 attoparsec
-auto-update
+-- auto-update
 base
 base16-bytestring
 base64-bytestring
 base-compat
 base-orphans
 base-prelude
-bert
 bifunctors
+bimap
 binary
+binary-conduit
 binary-tagged
 bitarray
 blaze-builder
-blaze-html
-blaze-markup
-blaze-textual
-bmp
+-- blaze-html
+-- blaze-markup
+-- blaze-textual
+-- bmp
 byteable
 byteorder
 bytestring
@@ -42,33 +38,37 @@ cabal-doctest
 cairo
 call-stack
 case-insensitive
-cassava
-cereal
+-- cassava
+-- cereal
 charset
 Chart
 Chart-cairo
-Chart-diagrams
+-- Chart-diagrams
 clock
 cmark
 cmdargs
 colour
 comonad
-compdata
+-- compdata
 conduit
 conduit-combinators
 conduit-extra
+-- conduit-find
+-- conduit-merge
+-- conduit-network-stream
+conduit-parse
 connection
 constraints
 containers
 contravariant
 cookie
-cpphs
+-- cpphs
 criterion
 cryptohash
 cryptohash-sha256
 cryptonite
 cryptonite-conduit
-css-text
+-- css-text
 curl
 data-accessor
 data-default
@@ -78,36 +78,38 @@ data-default-instances-dlist
 data-default-instances-old-locale
 data-reify
 deepseq
-derive
+-- derive
 diagrams
 diagrams-cairo
 diagrams-canvas
 diagrams-contrib
 diagrams-core
 diagrams-graphviz
-diagrams-gtk
+--diagrams-gtk
 diagrams-html5
 diagrams-lib
 diagrams-postscript
-diagrams-svg
-diagrams-wx
+--diagrams-svg
+-- diagrams-wx
 Diff
 digest
-direct-sqlite
+-- direct-sqlite
 directory
-distributed-process
-distributed-process-async
-distributed-process-client-server
-distributed-process-extras
--- distributed-process-registry
---distributed-process-simplelocalnet
--- distributed-process-task
---distributed-process-tests
-distributed-static
+dirstream
+-- distributed-process
+-- distributed-process-async
+-- distributed-process-client-server
+-- distributed-process-extras
+-- -- distributed-process-registry
+-- --distributed-process-simplelocalnet
+-- -- distributed-process-task
+-- --distributed-process-tests
+-- distributed-static
 distributive
 dlist
 doctemplates
 doctest
+double-conversion
 easy-file
 ed25519
 either
@@ -120,8 +122,8 @@ extensible-exceptions
 extra
 fail
 fast-logger
-fclabels
-fgl
+-- fclabels
+-- fgl
 file-embed
 filelock
 filemanip
@@ -132,54 +134,60 @@ fmlist
 foundation
 free
 fsnotify
+gauge
 gd
 generic-deriving
 generics-sop
-geniplate-mirror
+-- geniplate-mirror
 ghc-boot-th
 ghc-exactprint
 ghc-paths
 ghc-prim
-ghc-syb-utils
+-- ghc-syb-utils
 gio
 gitrev
-glib
+--glade
+--glib
 Glob
 gloss
 gloss-rendering
 GLURaw
 GLUT
 graphviz
-gtk2hs-buildtools
-gtk3
+--gtk2hs-buildtools
+--gtk3
+gi-gtk
+gi-gtk-declarative
 hackage-security
 haddock-library
-hakyll
+--hakyll
 half
 hashable
+hashtables
 haskeline
+haskell-gi
 haskell-lexer
 haskell-src-exts
-hastache
-hex
+-- hastache
 hinotify
-hit
+-- hit
 hlint
 hoopl
 hostname
-hourglass
+-- hourglass
 hpack
 hpc
 hs-bibutils
-hscolour
+-- hscolour
 hslogger
-hslua
+--hslua
 hspec
 hspec-core
 hspec-discover
 hspec-expectations
 hspec-smallcheck
 HTTP
+htoml-megaparsec
 http2
 http-api-data
 http-client
@@ -188,29 +196,30 @@ http-conduit
 http-date
 http-types
 HUnit
-hxt
-hxt-charproperties
-hxt-regex-xmlschema
-hxt-unicode
+-- hxt
+-- hxt-charproperties
+-- hxt-regex-xmlschema
+-- hxt-unicode
 ieee754
 IfElse
 integer-gmp
 integer-logarithms
 iproute
-JuicyPixels
+-- JuicyPixels
 kan-extensions
-language-c
-language-haskell-extract
-language-javascript
-language-python
+-- language-c
+-- language-haskell-extract
+-- language-javascript
+-- language-python
 lazysmallcheck
-lens
+-- lens
 lifted-async
 lifted-base
 linear
 logict
-lrucache
-markdown
+-- lrucache
+lzma
+--markdown
 math-functions
 megaparsec
 memory
@@ -220,44 +229,46 @@ microlens-ghc
 microlens-mtl
 microlens-platform
 microlens-th
-mime-types
+-- mime-types
+mmark
 mmorph
 monad-control
-monad-journal
+-- monad-journal
 monad-logger
 monad-loops
 monad-memo
-monad-par
-monad-par-extras
-MonadRandom
+-- monad-par
+-- monad-par-extras
+monad-st
+-- MonadRandom
 monad-unlift
 mono-traversable
 mtl
-multistate
-mwc-random
+-- multistate
+-- mwc-random
 nats
 neat-interpolation
 network
-network-transport
-network-transport-composed
-network-transport-inmemory
-network-transport-tcp
-network-transport-tests
+-- network-transport
+-- network-transport-composed
+-- network-transport-inmemory
+-- network-transport-tcp
+-- network-transport-tests
 network-uri
 newtype
 non-negative
-ObjectName
+-- ObjectName
 old-locale
 old-time
-Only
-open-browser
+-- Only
+-- open-browser
 OpenGL
 OpenGLRaw
 operational
 optparse-applicative
-pandoc
-pandoc-citeproc
-pandoc-types
+-- pandoc
+-- pandoc-citeproc
+-- pandoc-types
 pango
 parallel
 parsec
@@ -266,68 +277,69 @@ parser-combinators
 path
 path-io
 path-pieces
-patience
-pem
-persistent
-persistent-sqlite
-persistent-template
-pid1
-pipes
-pipes-aeson
-pipes-attoparsec
-pipes-binary
-pipes-bytestring
-pipes-concurrency
-pipes-extras
-pipes-network
-pipes-parse
-pipes-text
-pipes-zlib
+-- patience
+-- pem
+-- persistent
+-- persistent-sqlite
+-- persistent-template
+-- pid1
+-- pipes
+-- pipes-aeson
+-- pipes-attoparsec
+-- pipes-binary
+-- pipes-bytestring
+-- pipes-concurrency
+-- pipes-extras
+-- pipes-network
+-- pipes-parse
+-- pipes-safe
+-- --pipes-text
+-- pipes-zlib
 pointed
-pointedlist
+-- pointedlist
 polyparse
-prelude-extras
-pretty
-pretty-show
+-- prelude-extras
+-- pretty
+-- pretty-show
+prettyprinter
 primitive
 process
 profunctors
-project-template
-psqueues
+-- project-template
+-- psqueues
 QuickCheck
 quickcheck-instances
 quickcheck-io
-random
-random-fu
-random-source
+--random
+--random-fu
+--random-source
 rank1dynamic
-reactive-banana
-reactive-banana-wx
+-- reactive-banana
+-- reactive-banana-wx
 recursion-schemes
 reducers
 reflection
 regex-applicative
 regex-applicative-text
 regex-base
-regex-pcre-builtin
+--regex-pcre-builtin
 regex-posix
 regex-tdfa
-regex-tdfa-rc
-regex-tdfa-text
+-- regex-tdfa-text
 repa
-resource-pool
+-- resource-pool
 resourcet
 retry
-rfc5051
-rts
+-- rfc5051
+-- rts
 safe
 safe-exceptions
 scientific
 sdl2
-sdl2-compositor
+-- sdl2-compositor
 -- sdl2-gfx
 sdl2-image
-sdl2-mixer
+-- sdl2-mixer
 sdl2-ttf
 semigroupoids
 semigroups
@@ -335,22 +347,25 @@ setenv
 set-extra
 SHA
 shake
-shelly
-silently
-simple-reflect
-simple-sendfile
-singletons
-skylighting
+-- shelly
+-- silently
+-- simple-reflect
+-- simple-sendfile
+-- singletons
+-- skylighting
 smallcheck
-socks
+sockets
+-- socks
 split
 sqlite-simple
 StateVar
 statistics
 stm
 stm-chans
+stm-conduit
 store
 store-core
+-- streaming
 streaming-commons
 stringsearch
 syb
@@ -359,6 +374,7 @@ system-filepath
 tagged
 tagsoup
 tar
+tar-conduit
 tasty
 tasty-golden
 tasty-hspec
@@ -368,17 +384,17 @@ tasty-smallcheck
 tasty-th
 template-haskell
 temporary
-temporary-rc
-terminfo
-test-framework
-test-framework-hunit
-test-framework-quickcheck2
-test-framework-th
+--terminfo
+--test-framework
+--test-framework-hunit
+--test-framework-quickcheck2
+--test-framework-th
 texmath
 text
 text-binary
-text-metrics
-tf-random
+text-format
+-- text-metrics
+-- tf-random
 th-expand-syns
 th-lift
 th-lift-instances
@@ -391,12 +407,13 @@ tls
 transformers
 transformers-base
 transformers-compat
-tree-view
+-- tree-view
 trifecta
-unbounded-delays
-unexceptionalio
-unicode-transforms
-uniplate
+tuples-homogenous-h98
+--unbounded-delays
+--unexceptionalio
+--unicode-transforms
+--uniplate
 unix
 unix-compat
 unix-time
@@ -405,35 +422,65 @@ unordered-containers
 uri-bytestring
 utf8-string
 uuid-types
-vault
+-- vault
 vector
 vector-algorithms
 vector-binary-instances
+vector-sized
 vector-th-unbox
 void
-wai
-wai-app-static
-wai-extra
-wai-logger
-warp
-wl-pprint-extras
-wl-pprint-text
+-- wai
+-- wai-app-static
+-- wai-extra
+-- wai-logger
+-- warp
 word8
-wx
-wxc
-wxcore
-wxdirect
-x509
-x509-store
-x509-system
-x509-validation
+-- wx
+-- wxc
+-- wxcore
+-- wxdirect
+-- x509
+-- x509-store
+-- x509-system
+-- x509-validation
 xhtml
 xml
 xml-conduit
 xml-types
 yaml
-Yampa
+-- Yampa
 zip-archive
 zlib
 zlib-bindings
-tracetree
+-- tracetree
+-- orgmode-parse
+safe-exceptions-checked
+
+-- sexp-grammar
+-- invertible-grammar
+
+sfmt
+
+--accelerate
+--accelerate-bignum
+--accelerate-blas
+--accelerate-fft
+--accelerate-io
+--accelerate-llvm
+--accelerate-llvm-native
+--accelerate-llvm-ptx
+--blas-hs
+--colour-accelerate
+--cublas
+--cuda
+--gloss-accelerate
+--gloss-raster-accelerate
+--hmatrix
+--linear-accelerate
+--llvm-hs-pure
+--mwc-random-accelerate
+-- primitive-simd
+
+-- -- For testing
+-- sexp-grammar
+-- invertible-grammar

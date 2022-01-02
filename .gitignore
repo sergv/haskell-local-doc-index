@@ -16,3 +16,6 @@ local-store/
 cabal.project.local
 generated/
 tags
+files.txt
+all-packages/
+docs/

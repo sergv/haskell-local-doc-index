@@ -3,21 +3,21 @@ store-dir: local-store
 packages: generated/depends-on-all.cabal
 
 constraints:
-  Cabal installed,
-  bytestring installed,
-  packedstring == 0,
-  small-bytearray-builder >= 0.3.4,
-  ip >= 1.7.3,
-  -- aeson < 2,
-  diagrams-lib >= 1.4.4,
-  sockets >= 0.5.0.0,
+  , Cabal installed
+  , bytestring installed
+  , packedstring == 0
+  , small-bytearray-builder >= 0.3.4
+  , ip >= 1.7.3
+  -- , aeson < 2
+  , diagrams-lib >= 1.4.4
+  , sockets >= 0.5.0.0
   -- sockets-0.5.0.0 is not compatible with posix-api-0.3.5.0
-  posix-api < 0.3.5.0,
-  direct-sqlite >= 2.3.26,
+  , posix-api < 0.3.5.0
+  , direct-sqlite >= 2.3.26
 
-  ghc-exactprint >= 1.5,
-  ghc-lib-parser >= 9.2.2,
-  bytesmith < 0
+  , ghc-exactprint >= 1.5
+  , ghc-lib-parser >= 9.2.2
+  , bytesmith < 0
 
 package *
   documentation: True
@@ -32,49 +32,48 @@ package *
   -- haddock-css: $haddock_css
 
 allow-newer:
-  containers,
-  Cabal,
-  HUnit,
-  QuickCheck,
-  SVGFonts,
-  base,
-  bifunctors,
-  conduit,
-  diagrams-cairo,
-  diagrams-lib,
-  distributed-process,
-  haskell-src-exts,
-  fgl,
-  free,
-  lens,
-  optparse-applicative,
-  pipes,
-  pqueue,
-  process,
-  syb,
-  template-haskell,
-  time,
-  aeson,
-  blank-canvas,
-  gtk,
-  stm,
-  haskell-gi-base,
-  haskell-gi,
-  mtl,
-  polyparse,
-  prettyprinter,
-  primitive,
-  regex-base,
-  regex-tdfa,
-  pandoc,
-  entropy,
-  diagrams-core,
-  sockets:byteslice,
-  sockets:bytestring,
-  ip:bytestring,
-  ip:attoparsec,
-  bytesmith:bytestring,
-  sfmt:bytestring,
-  graphviz:bytestring,
-  OpenGL:bytestring,
-
+  , containers
+  , Cabal
+  , HUnit
+  , QuickCheck
+  , SVGFonts
+  , base
+  , bifunctors
+  , conduit
+  , diagrams-cairo
+  , diagrams-lib
+  , distributed-process
+  , haskell-src-exts
+  , fgl
+  , free
+  , lens
+  , optparse-applicative
+  , pipes
+  , pqueue
+  , process
+  , syb
+  , template-haskell
+  , time
+  , aeson
+  , blank-canvas
+  , gtk
+  , stm
+  , haskell-gi-base
+  , haskell-gi
+  , mtl
+  , polyparse
+  , prettyprinter
+  , primitive
+  , regex-base
+  , regex-tdfa
+  , pandoc
+  , entropy
+  , diagrams-core
+  , sockets:byteslice
+  , sockets:bytestring
+  , ip:bytestring
+  , ip:attoparsec
+  , bytesmith:bytestring
+  , sfmt:bytestring
+  , graphviz:bytestring
+  , OpenGL:bytestring

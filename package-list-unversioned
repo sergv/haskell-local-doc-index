@@ -65,6 +65,7 @@ cookie
 -- cpphs
 criterion
 cryptohash
+cryptohash-sha1
 cryptohash-sha256
 cryptonite
 cryptonite-conduit
@@ -143,8 +144,10 @@ ghc-boot-th
 ghc-exactprint
 ghc-paths
 ghc-prim
+ghc-typelits-knownnat
 -- ghc-syb-utils
 gio
+githash
 gitrev
 --glade
 --glib
@@ -157,7 +160,7 @@ graphviz
 --gtk2hs-buildtools
 --gtk3
 gi-gtk
-gi-gtk-declarative
+-- gi-gtk-declarative
 hackage-security
 haddock-library
 --hakyll
@@ -171,8 +174,8 @@ haskell-src-exts
 -- hastache
 hinotify
 -- hit
-hlint
-hoopl
+-- hlint
+-- hoopl
 hostname
 -- hourglass
 hpack
@@ -241,7 +244,7 @@ monad-memo
 -- monad-par-extras
 monad-st
 -- MonadRandom
-monad-unlift
+-- monad-unlift
 mono-traversable
 mtl
 -- multistate
@@ -354,7 +357,7 @@ shake
 -- singletons
 -- skylighting
 smallcheck
-sockets
+-- sockets
 -- socks
 split
 sqlite-simple
@@ -363,6 +366,7 @@ statistics
 stm
 stm-chans
 stm-conduit
+stm-containers
 store
 store-core
 -- streaming
@@ -376,10 +380,13 @@ tagsoup
 tar
 tar-conduit
 tasty
+tasty-bench
+tasty-expected-failure
 tasty-golden
 tasty-hspec
 tasty-hunit
 tasty-quickcheck
+tasty-rerun
 tasty-smallcheck
 tasty-th
 template-haskell
@@ -392,7 +399,7 @@ temporary
 texmath
 text
 text-binary
-text-format
+-- text-format
 -- text-metrics
 -- tf-random
 th-expand-syns
@@ -484,3 +491,10 @@ sfmt
 -- -- For testing
 -- sexp-grammar
 -- invertible-grammar
+
+lsp-types
+lsp
+rope-utf16-splay
+
+ghc-lib-parser
+ghc-exactprint

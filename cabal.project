@@ -4,15 +4,20 @@ packages: generated/depends-on-all.cabal
 
 constraints:
   Cabal installed,
+  bytestring installed,
   packedstring == 0,
   small-bytearray-builder >= 0.3.4,
   ip >= 1.7.3,
-  aeson < 2,
+  -- aeson < 2,
   diagrams-lib >= 1.4.4,
   sockets >= 0.5.0.0,
   -- sockets-0.5.0.0 is not compatible with posix-api-0.3.5.0
   posix-api < 0.3.5.0,
-  direct-sqlite >= 2.3.26
+  direct-sqlite >= 2.3.26,
+
+  ghc-exactprint >= 1.5,
+  ghc-lib-parser >= 9.2.2,
+  bytesmith < 0
 
 package *
   documentation: True
@@ -64,5 +69,12 @@ allow-newer:
   pandoc,
   entropy,
   diagrams-core,
-  sockets:byteslice
+  sockets:byteslice,
+  sockets:bytestring,
+  ip:bytestring,
+  ip:attoparsec,
+  bytesmith:bytestring,
+  sfmt:bytestring,
+  graphviz:bytestring,
+  OpenGL:bytestring,
 

@@ -249,15 +249,13 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
 
         fs=( $(find "$package_download_dir" -maxdepth 1 -type d -name "${pkg}*") )
 
-        if [[ "${#fs[@]}" = 0 && ! -d "$pkg" && "$pkg" != z-* && "$pkg" != ghc-heap-* && "$pkg" != libiserv-* && "$pkg" != ghci* ]]; then
-            echo "Downloading $pkg"
-            pushd "$package_download_dir" >/dev/null
-            cabal get "$pkg"
-            popd >/dev/null
+        if [[ "${#fs[@]}" = 0 && ! -d "$pkg" && "$pkg" != z-* && "$pkg" != ghc-heap-* && "$pkg" != libiserv-* && "$pkg" != ghci* && "$pkg" != integer-gmp* ]]; then
+            echo "Downloading $pkg" >&2
+            echo "$pkg"
         else
-            echo "Skipping $pkg"
+            echo "Skipping $pkg" >&2
         fi
-    done
+    done | (cd "$package_download_dir"; xargs cabal get)
 fi
 
 if [[ "$action" = "update-tags" || "$action" = "all" ]]; then

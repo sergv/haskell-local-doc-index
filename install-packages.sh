@@ -269,9 +269,9 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
     mkdir -p "$docs_dir"
 
 
-    while IFS= read -d $'\0' -r interface_file ; do
-        echo "Found interface file ${interface_file}"
-        doc_dir="$(dirname "$interface_file")"
+    while IFS= read -d $'\0' -r haddock_file ; do
+        echo "Found haddock file ${haddock_file}"
+        doc_dir="$(dirname "$haddock_file")"
         dir="$(dirname "$doc_dir")"
         dir="$(dirname "$dir")"
         dir="$(dirname "$dir")"
@@ -286,12 +286,12 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
     pushd "$docs_dir" >/dev/null
         haddock_args=""
 
-        while IFS= read -d $'\0' -r interface_file ; do
-            interface_file_rel="$(realpath --relative-to "$docs_dir" "$interface_file")"
-            html="$(dirname "$interface_file_rel")"
-            flag="--read-interface=${html},${interface_file_rel}"
-            #flag="--read-interface=file://${html},${interface_file_rel}"
-            # flag="--read-interface=${interface_file_rel}"
+        while IFS= read -d $'\0' -r haddock_file ; do
+            haddock_file_rel="$(realpath --relative-to "$docs_dir" "$haddock_file")"
+            html="$(dirname "$haddock_file_rel")"
+            flag="--read-interface=${html},${haddock_file_rel}"
+            #flag="--read-interface=file://${html},${haddock_file_rel}"
+            # flag="--read-interface=${haddock_file_rel}"
 
             if [[ -z "$haddock_args" ]]; then
                 haddock_args="$flag"

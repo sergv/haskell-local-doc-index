@@ -17,8 +17,8 @@ set -e
 root=$(cd "$(dirname "$0")" && pwd)
 ghc_version="$(ghc --numeric-version)"
 
-# cabal="cabal"
-cabal="./cabal-3.7-no-asserts"
+cabal="cabal"
+# cabal="./cabal-3.7-no-asserts"
 # cabal="/tmp/dist/build/x86_64-linux/ghc-8.10.7/cabal-install-3.7.0.0/x/cabal/build/cabal/cabal"
 
 # haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.6.5/haddock-2.22.0/x/haddock/build/haddock/haddock
@@ -48,7 +48,10 @@ mkdir -p "$docs_html_dir"
 # Dir with package db, libraries, shared files
 local="$root/local"
 
-ghc_docs_root="$(dirname "$(which ghc)")/../share/doc/ghc-${ghc_version}/html/libraries/"
+# Present in binary installations but on NixOs is part of another package
+ghc_docs_root_default="$(dirname "$(which ghc)")/../share/doc/ghc-${ghc_version}/html/libraries/"
+
+ghc_docs_root="${GHC_DOCS_ROOT:-ghc_docs_root_default}"
 
 package_list="$root/package-list-unversioned"
 package_download_dir="$root/all-packages"
@@ -109,6 +112,8 @@ if [[ "$action" = "install" || "$action" = "generate-haddock-docs" || "$action" 
             else
                 echo "Copying documentation for $pkg"
                 cp -r "$ghc_docs_root/$pkg" "$docs_html_dir"
+                chmod +w "$docs_html_dir/$pkg"
+                # sudo chown -R sergey: "$docs_html_dir/$pkg"
             fi
         fi
     done
@@ -127,7 +132,6 @@ if [[ "$action" = "install" || "$action" = "all" ]]; then
         fi
     done
 
-    echo "global_packages_re = ${global_packages_re}"
     packages_to_install=$(cat "$package_list" | awk '!/^ *--.*$/' | grep -v -E "^($global_packages_re)$" | xargs echo)
 
     echo "Installing following packages"
@@ -239,6 +243,12 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
         if [[ "$pkg" == "ghc-boot-8.10.7" ]]; then
             pkg="ghc-boot-9.2.1"
         fi
+        if [[ "$pkg" == "ghc-boot-9.4.2" ]]; then
+            pkg="ghc-boot-9.4.1"
+        fi
+        if [[ "$pkg" == "ghc-boot-th-9.4.2" ]]; then
+            pkg="ghc-boot-th-9.4.1"
+        fi
         if [[ "$pkg" == "ghc-boot-th-8.10.7" ]]; then
             pkg="ghc-boot-th-8.10.2"
         fi
@@ -249,7 +259,7 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
 
         fs=( $(find "$package_download_dir" -maxdepth 1 -type d -name "${pkg}*") )
 
-        if [[ "${#fs[@]}" = 0 && ! -d "$pkg" && "$pkg" != z-* && "$pkg" != ghc-heap-* && "$pkg" != libiserv-* && "$pkg" != ghci* && "$pkg" != integer-gmp* ]]; then
+        if [[ "${#fs[@]}" = 0 && ! -d "$pkg" && "$pkg" != z-* && "$pkg" != ghc-heap-* && "$pkg" != libiserv-* && "$pkg" != ghci* && "$pkg" != integer-gmp* && "$pkg" != system-cxx-std-lib* ]]; then
             echo "Downloading $pkg" >&2
             echo "$pkg"
         else

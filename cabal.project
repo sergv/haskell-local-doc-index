@@ -18,6 +18,8 @@ constraints:
   , ghc-exactprint >= 1.5
   , ghc-lib-parser >= 9.2.2
   , bytesmith < 0
+  , double-conversion < 0
+  , fgl < 0
 
 package *
   documentation: True
@@ -44,7 +46,6 @@ allow-newer:
   , diagrams-lib
   , distributed-process
   , haskell-src-exts
-  , fgl
   , free
   , lens
   , optparse-applicative
@@ -77,3 +78,13 @@ allow-newer:
   , sfmt:bytestring
   , graphviz:bytestring
   , OpenGL:bytestring
+  , store-core:text
+  , gi-gtk:text
+  , gi-gsk:text
+  , gi-graphene:text
+  , gi-gdk:text
+  , gi-atk:text
+  , pango:text
+  , glib:text
+  , cairo:text
+  , OpenGLRaw:text

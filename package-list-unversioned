@@ -34,15 +34,15 @@ byteorder
 bytestring
 bytestring-builder
 Cabal
-cabal-doctest
-cairo
+-- cabal-doctest
+--cairo
 call-stack
 case-insensitive
 -- cassava
 -- cereal
 charset
 Chart
-Chart-cairo
+--Chart-cairo
 -- Chart-diagrams
 clock
 cmark
@@ -81,13 +81,13 @@ data-reify
 deepseq
 -- derive
 diagrams
-diagrams-cairo
+--diagrams-cairo
 diagrams-canvas
 diagrams-contrib
 diagrams-core
-diagrams-graphviz
---diagrams-gtk
-diagrams-html5
+-- diagrams-graphviz
+-- diagrams-gtk
+-- diagrams-html5
 diagrams-lib
 diagrams-postscript
 --diagrams-svg
@@ -109,8 +109,8 @@ dirstream
 distributive
 dlist
 doctemplates
-doctest
-double-conversion
+-- doctest
+-- double-conversion
 easy-file
 ed25519
 either
@@ -141,12 +141,12 @@ generic-deriving
 generics-sop
 -- geniplate-mirror
 ghc-boot-th
-ghc-exactprint
+-- ghc-exactprint
 ghc-paths
 ghc-prim
-ghc-typelits-knownnat
+-- ghc-typelits-knownnat
 -- ghc-syb-utils
-gio
+--gio
 githash
 gitrev
 --glade
@@ -156,10 +156,10 @@ gloss
 gloss-rendering
 GLURaw
 GLUT
-graphviz
+--graphviz
 --gtk2hs-buildtools
 --gtk3
-gi-gtk
+-- gi-gtk
 -- gi-gtk-declarative
 hackage-security
 haddock-library
@@ -168,7 +168,7 @@ half
 hashable
 hashtables
 haskeline
-haskell-gi
+--haskell-gi
 haskell-lexer
 haskell-src-exts
 -- hastache
@@ -272,7 +272,7 @@ optparse-applicative
 -- pandoc
 -- pandoc-citeproc
 -- pandoc-types
-pango
+--pango
 parallel
 parsec
 parsers
@@ -329,7 +329,7 @@ regex-base
 regex-posix
 regex-tdfa
 -- regex-tdfa-text
-repa
+-- repa
 -- resource-pool
 resourcet
 retry
@@ -497,4 +497,3 @@ lsp
 rope-utf16-splay
 
 ghc-lib-parser
-ghc-exactprint

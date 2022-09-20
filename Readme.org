@@ -1,0 +1,23 @@
+#+TITLE:       Readme
+#+DATE:        20 September 2022
+#+EMAIL:       serg.foo@gmail.com
+#+DESCRIPTION:
+#+KEYWORDS:
+#+STARTUP:     content
+#+STARTUP:     inlineimages
+
+# Disable treating underscores as subscripts
+#+OPTIONS: ^:nil
+
+This is a utility that grabs latest version of specified Haskell
+packages along with their dependencies and produces a haddock doc
+index for all of them.
+
+Currently in a form of a slightly convoluted bash script. Do try it
+over and see how it goes!
+
+Packages get built by cabal in a local store which can be removed
+after docs are finished. That is, build errors or dependency
+resolution errors (e.g. mismatching versions) prevent docs from being
+generated.
+

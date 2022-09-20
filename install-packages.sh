@@ -31,8 +31,8 @@ haddock=haddock
 # haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/.stack-work/install/x86_64-linux-tinfo6/lts-12.5/8.4.3/bin/haddock
 # haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/.stack-work/install/x86_64-linux-tinfo6/34770313da6adf360034370351a912936d6a0179f4945cf5366f5ad7eb1b662b/8.6.5/bin/haddoc
 
-haddock_theme_dir="/home/sergey/projects/haskell/projects/thirdparty/haddock/haddock-api/resources/html/Ocean.theme"
-# haddock_css="${haddock_theme_dir}/ocean.css"
+haddock_theme="$(pwd)/themes/Ocean.theme/ocean.css"
+haddock_theme_dir="$(dirname "$haddock_theme")"
 
 export haddock_api_datadir=/home/sergey/projects/haskell/projects/thirdparty/haddock/haddock-api/resources
 
@@ -72,13 +72,14 @@ fi
 
 action="${1:-all}"
 
-if ! [[ "$action" = "all" || "$action" = "install" || "$action" = "download" || "$action" = "update-tags" || "$action" = "generate-haddock-docs" ]]; then
+if ! [[ "$action" = "all" || "$action" = "install" || "$action" = "download" || "$action" = "update-tags" || "$action" = "generate-haddock-docs" || "$action" = "update-css" ]]; then
     echo "Invalid action: $action." >&2
-    echo "Valid actions: install, download, update-tags, generate-haddock-docs, all" >&2
+    echo "Valid actions: install, download, update-tags, generate-haddock-docs, update-css, all" >&2
     echo "  install - create local package db and install packages from ‘$package_list’ into it, using the latest LTS stackage snapshot" >&2
     echo "  download - get sources of all packages installed into local package db"
     echo "  update-tags - regenerate tags file"
     echo "  generate-haddock-docs - create offline documentation for installed packages"
+    echo "  update-css - update CSS theme file everywhere"
 fi
 
 # Utils
@@ -113,6 +114,7 @@ if [[ "$action" = "install" || "$action" = "generate-haddock-docs" || "$action" 
                 echo "Copying documentation for $pkg"
                 cp -r "$ghc_docs_root/$pkg" "$docs_html_dir"
                 chmod +w "$docs_html_dir/$pkg"
+                [[ -d "$docs_html_dir/$pkg/src" ]] && chmod +w "$docs_html_dir/$pkg/src"
                 # sudo chown -R sergey: "$docs_html_dir/$pkg"
             fi
         fi
@@ -306,7 +308,7 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
             else
                 haddock_args="$haddock_args $flag"
             fi
-        done < <(find "${docs_html_dir}" -type f -name '*.haddock' -print0)
+        done < <(find "${docs_html_dir}" -type f -name '*.haddock' | sort | tr '\n' '\0')
 
         echo "Running haddock"
 
@@ -327,13 +329,23 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
             --hyperlinked-source \
             $haddock_args
     popd >/dev/null
+fi
 
+if [[ "$action" = "update-css" || "$action" = "all" ]]; then
     # Fix linuwial that comes with haddocs for precompiled packages (e.g. base).
     while IFS= read -d $'\0' -r css ; do
 
-        if [[ ! -h "$css" ]]; then
-            rm -f "$css"
-            ln -s "$haddock_theme_dir/ocean.css" "$css"
+        echo "$css"
+        # if [[ ! -h "$css" ]]; then
+        rm -f "$css"
+        ln -s "$haddock_theme" "$css"
+        # fi
+
+        source_css="$(dirname "$css")/src/style.css"
+
+        if [[ -f "$source_css" ]]; then
+            rm -f "$source_css"
+            ln -s "$haddock_theme_dir/../solarized.css" "$source_css"
         fi
 
         for haddock_resource in hslogo-16.png minus.gif plus.gif synopsis.png; do
@@ -345,6 +357,4 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
         done
 
     done < <(find "$docs_dir" -name 'linuwial.css' -print0)
-
 fi
-

@@ -1,20 +1,23 @@
 body {
-	background-color: #fdf6e3;
+	// background-color: #fdf6e3;
+        background-color: #002b36;
 }
 
 .hs-identifier {
-	color: #073642;
+	// color: #073642;
+        color: #839496;
 }
 
 .hs-identifier.hs-var {
 }
 
 .hs-identifier.hs-type {
-	color: #5f5faf;
+	color: #d33682;
 }
 
 .hs-keyword {
-	color: #af005f;
+	color: #6c71c4;
+        font-weight: bold;
 }
 
 .hs-string, .hs-char {
@@ -22,11 +25,11 @@ body {
 }
 
 .hs-number {
-	color: #268bd2;
+	color: #2aa198;
 }
 
 .hs-operator {
-	color: #d33682;
+	color: #dc322f;
 }
 
 .hs-glyph, .hs-special {
@@ -34,24 +37,24 @@ body {
 }
 
 .hs-comment {
-	color: #8a8a8a;
+	color: #586e75;
 }
 
 .hs-pragma {
-	color: #2aa198;
+	color: #cb4b16;
 }
 
 .hs-cpp {
-	color: #859900;
+	color: #cb4b16;
 }
 
 a:link, a:visited {
 	text-decoration: none;
-	border-bottom: 1px solid #eee8d5;
+	border-bottom: 1px solid #586e75;
 }
 
 a:hover, a.hover-highlight {
-	background-color: #eee8d5;
+	background-color: #073642;
 }
 
 span.annot{
@@ -60,7 +63,10 @@ span.annot{
     text-decoration:none
   }
 
-span.annot:hover{z-index:25; background-color:#ff0}
+span.annot:hover {
+    z-index:25;
+    background-color: #073642;
+}
 
 span.annot span.annottext{
   display: none;
@@ -77,8 +83,8 @@ span.annot span.annottext{
   left: 1em; top: 2em;
   z-index: 99;
   margin-left: 5;
-  background: #FFFFAA;
-  border: 2px solid #FFAD33;
+  background: #b58900;
+  border: 2px solid #cb4b16;
   padding: 0.8em 1em;
 }
 

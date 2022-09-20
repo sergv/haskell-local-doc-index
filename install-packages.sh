@@ -31,7 +31,7 @@ haddock=haddock
 # haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/.stack-work/install/x86_64-linux-tinfo6/lts-12.5/8.4.3/bin/haddock
 # haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/.stack-work/install/x86_64-linux-tinfo6/34770313da6adf360034370351a912936d6a0179f4945cf5366f5ad7eb1b662b/8.6.5/bin/haddoc
 
-haddock_theme="$(pwd)/themes/Ocean.theme/ocean.css"
+haddock_theme="$(pwd)/themes/Solarized.theme/solarized.css"
 haddock_theme_dir="$(dirname "$haddock_theme")"
 
 export haddock_api_datadir=/home/sergey/projects/haskell/projects/thirdparty/haddock/haddock-api/resources

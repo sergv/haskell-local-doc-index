@@ -21,20 +21,10 @@ cabal="cabal"
 # cabal="./cabal-3.7-no-asserts"
 # cabal="/tmp/dist/build/x86_64-linux/ghc-8.10.7/cabal-install-3.7.0.0/x/cabal/build/cabal/cabal"
 
-# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.6.5/haddock-2.22.0/x/haddock/build/haddock/haddock
-# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.8.2/haddock-2.23.0/x/haddock/build/haddock/haddock
-# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.10.7/haddock-2.24.2/x/haddock/build/haddock/haddock
-
 haddock=haddock
-# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist/build/haddock/haddock
-#haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/dist-newstyle/build/x86_64-linux/ghc-8.4.3/haddock-2.20.0/x/haddock/build/haddock/haddock
-# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/.stack-work/install/x86_64-linux-tinfo6/lts-12.5/8.4.3/bin/haddock
-# haddock=/home/sergey/projects/haskell/projects/thirdparty/haddock/.stack-work/install/x86_64-linux-tinfo6/34770313da6adf360034370351a912936d6a0179f4945cf5366f5ad7eb1b662b/8.6.5/bin/haddoc
 
 haddock_theme="$(pwd)/themes/Solarized.theme/solarized.css"
 haddock_theme_dir="$(dirname "$haddock_theme")"
-
-export haddock_api_datadir=/home/sergey/projects/haskell/projects/thirdparty/haddock/haddock-api/resources
 
 # pkg_db_dir="$root/local/pkg-db.d"
 store_pkg_db_dir="$root/local-store/ghc-${ghc_version}/package.db/"

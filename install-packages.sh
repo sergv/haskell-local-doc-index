@@ -331,9 +331,10 @@ if [[ "$action" = "update-css" || "$action" = "all" ]]; then
         ln -s "$haddock_theme" "$css"
         # fi
 
-        source_css="$(dirname "$css")/src/style.css"
+        source_css_dir="$(dirname "$css")/src"
+        source_css="${source_css_dir}/style.css"
 
-        if [[ -f "$source_css" ]]; then
+        if [[ -d "$source_css_dir" ]]; then
             rm -f "$source_css"
             ln -s "$haddock_theme_dir/../solarized.css" "$source_css"
         fi

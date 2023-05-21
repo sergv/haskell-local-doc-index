@@ -14,6 +14,11 @@ set -e
 
 # Inputs
 
+if [[ -z "${IN_NIX_SHELL-}" ]]; then
+    echo "Re-run under ‘nix develop -c’" >&2
+    exit 1
+fi
+
 root=$(cd "$(dirname "$0")" && pwd)
 ghc_version="$(ghc --numeric-version)"
 
@@ -41,7 +46,7 @@ local="$root/local"
 # Present in binary installations but on NixOs is part of another package
 ghc_docs_root_default="$(dirname "$(which ghc)")/../share/doc/ghc-${ghc_version}/html/libraries/"
 
-ghc_docs_root="${GHC_DOCS_ROOT:-ghc_docs_root_default}"
+ghc_docs_root="${GHC_DOCS_ROOT:-$ghc_docs_root_default}"
 
 package_list="$root/package-list-unversioned"
 package_download_dir="$root/all-packages"
@@ -51,6 +56,7 @@ special_global_packages="rts|ghc"
 
 if [[ ! -d "$ghc_docs_root" ]]; then
     echo "The ghc documentation directory does not exist: $ghc_docs_root" >&2
+    echo "Did you forget to run this scipt under ‘nix develop -c’?" >&2
     exit 1
 fi
 if [[ ! -f "$package_list" ]]; then
@@ -173,7 +179,7 @@ EOF
 
     execVerbose \
         "$cabal" build \
-        -j4 \
+        -j16 \
         --project-file "cabal.project" \
         --disable-split-objs \
         --enable-optimization=0 \
@@ -248,6 +254,13 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
             pkg="hpc-0.6.0.3"
         fi
 
+        # Should be removed going forwards...
+        if [[ "$pkg" == "ghc-prim-0.10.0" ]]; then
+            pkg="ghc-prim-0.9.0"
+        fi
+        if [[ "$pkg" == "template-haskell-2.20.0.0" ]]; then
+            pkg="template-haskell-2.19.0.0"
+        fi
 
         fs=( $(find "$package_download_dir" -maxdepth 1 -type d -name "${pkg}*") )
 
@@ -257,17 +270,19 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
         else
             echo "Skipping $pkg" >&2
         fi
-    done | (cd "$package_download_dir"; xargs cabal get)
+    done | awk '!/^Win32-[0-9.]+$/' | (cd "$package_download_dir"; xargs cabal get)
+    # Can’t build it
+    (cd "$package_download_dir"; cabal get Win32)
 fi
 
 if [[ "$action" = "update-tags" || "$action" = "all" ]]; then
     echo "Updating tags"
-    time fast-tags -o "$root/tags" -v -R "$package_download_dir" --nomerge
+    # time fast-tags -o "$root/tags" -v -R "$package_download_dir" --nomerge
+    ./update-tags.sh
 fi
 
 if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
     mkdir -p "$docs_dir"
-
 
     while IFS= read -d $'\0' -r haddock_file ; do
         echo "Found haddock file ${haddock_file}"

@@ -14,42 +14,11 @@
           t    = pkgs.lib.trivial;
           hl   = pkgs.haskell.lib;
 
-          cabal-repo = pkgs.fetchFromGitHub {
-            owner = "sergv";
-            repo = "cabal";
-            rev = "dev";
-            sha256 = "sha256-m0hHnC460ZoB9o/YweRMCG5onqgMrwPfexYzZDriR30="; # pkgs.lib.fakeSha256;
-          };
-
-          hpkgs = pkgs.haskell.packages.ghc942;
-
-          hpkgsCabal = pkgs.haskell.packages.ghc924.override {
-            overrides = self: super: {
-              Cabal = self.callCabal2nix
-                "Cabal"
-                (cabal-repo + "/Cabal")
-                {};
-              Cabal-syntax = self.callCabal2nix
-                "Cabal-syntax"
-                (cabal-repo + "/Cabal-syntax")
-                {};
-              cabal-install-solver = self.callCabal2nix
-                "cabal-install-solver"
-                (cabal-repo + "/cabal-install-solver")
-                {};
-              cabal-install = self.callCabal2nix
-                "cabal-install"
-                (cabal-repo + "/cabal-install")
-                { inherit (self) Cabal-described Cabal-QuickCheck Cabal-tree-diff;
-                };
-              process = pkgs.haskell.lib.dontCheck
-                (self.callHackage "process" "1.6.15.0" {});
-            };
-          };
+          hpkgs = pkgs.haskell.packages.ghc961;
 
           ghc = hpkgs.ghc.override {
             enableDocs = true;
-            enableHaddockProgram = true;
+            # enableHaddockProgram = true;
           };
 
           # GTK-enabled deps
@@ -79,9 +48,12 @@
             pkgs.fontconfig
             pkgs.freetype
             pkgs.gd
+            pkgs.libdeflate
             pkgs.libGLU
             pkgs.libjpeg
             pkgs.libpng
+            pkgs.libtiff
+            pkgs.libwebp
             pkgs.lzma
             pkgs.SDL2
             pkgs.SDL2_gfx
@@ -101,7 +73,6 @@
           nativeBuildInputs = [
             pkgs.pkg-config
             ghc
-            hpkgsCabal.cabal-install
           ] ++ map (x: if builtins.hasAttr "dev" x then x.dev else x) nativeDeps;
 
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath nativeDeps;

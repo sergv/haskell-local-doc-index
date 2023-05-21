@@ -447,6 +447,14 @@ ul.details-toggle {
   margin-top: 0.8em;
 }
 
+#interface td.src {
+    width: 25%;
+}
+
+#interface td.doc {
+    width: 75%;
+}
+
 .doc table {
   border-collapse: collapse;
   border-spacing: 0px;

@@ -1,6 +1,8 @@
-store-dir: local-store
+store-dir:
+  local-store
 
-packages: generated/depends-on-all.cabal
+packages:
+  generated/depends-on-all.cabal
 
 constraints:
   , Cabal installed
@@ -20,6 +22,10 @@ constraints:
   , bytesmith < 0
   , double-conversion < 0
   , fgl < 0
+  , mfsolve < 0
+
+  , vector >= 0.13
+  , Chart >= 1.9
 
 package *
   documentation: True
@@ -34,57 +40,82 @@ package *
   -- haddock-css: $haddock_css
 
 allow-newer:
-  , containers
-  , Cabal
-  , HUnit
-  , QuickCheck
-  , SVGFonts
+  -- , containers
+  -- , Cabal
+  -- , HUnit
+  -- , QuickCheck
+  -- , SVGFonts
+  -- , base
+  -- , bifunctors
+  -- , conduit
+  -- , diagrams-cairo
+  -- , diagrams-lib
+  -- , distributed-process
+  -- , haskell-src-exts
+  -- , free
+  -- , lens
+  -- , optparse-applicative
+  -- , pipes
+  -- , pqueue
+  -- , process
+  -- , syb
+  -- , template-haskell
+  -- , time
+  -- , aeson
+  -- , blank-canvas
+  -- , gtk
+  -- , stm
+  -- , haskell-gi-base
+  -- , haskell-gi
+  -- , mtl
+  -- , polyparse
+  -- , prettyprinter
+  -- , primitive
+  -- , regex-base
+  -- , regex-tdfa
+  -- , pandoc
+  -- , entropy
+  -- , diagrams-core
+  , assoc
   , base
-  , bifunctors
-  , conduit
-  , diagrams-cairo
-  , diagrams-lib
-  , distributed-process
-  , haskell-src-exts
-  , free
-  , lens
-  , optparse-applicative
-  , pipes
-  , pqueue
-  , process
-  , syb
-  , template-haskell
-  , time
-  , aeson
-  , blank-canvas
-  , gtk
-  , stm
-  , haskell-gi-base
-  , haskell-gi
-  , mtl
-  , polyparse
-  , prettyprinter
-  , primitive
-  , regex-base
-  , regex-tdfa
-  , pandoc
+  , bytestring
   , entropy
-  , diagrams-core
-  , sockets:byteslice
-  , sockets:bytestring
-  , ip:bytestring
-  , ip:attoparsec
-  , bytesmith:bytestring
-  , sfmt:bytestring
-  , graphviz:bytestring
-  , OpenGL:bytestring
-  , store-core:text
-  , gi-gtk:text
-  , gi-gsk:text
-  , gi-graphene:text
-  , gi-gdk:text
-  , gi-atk:text
-  , pango:text
-  , glib:text
-  , cairo:text
-  , OpenGLRaw:text
+  , ghc-prim
+  , mtl
+  , primitive
+  , template-haskell
+  , transformers
+  , these
+  , unix
+  , vector
+  -- , sockets:byteslice
+  -- , sockets:bytestring
+  -- , ip:bytestring
+  -- , ip:attoparsec
+  -- , bytesmith:bytestring
+  -- , sfmt:bytestring
+  -- , graphviz:bytestring
+  -- , OpenGL:bytestring
+  -- , store-core:text
+  -- , gi-gtk:text
+  -- , gi-gsk:text
+  -- , gi-graphene:text
+  -- , gi-gdk:text
+  -- , gi-atk:text
+  -- , pango:text
+  -- , glib:text
+  -- , cairo:text
+  -- , OpenGLRaw:text
+  -- , vector-sized:vector
+  -- , sfmt:base
+  -- , sdl2:vector
+  -- , regex-applicative-text:base
+  -- , sfmt:primitive
+  -- , cmark:text
+  -- , base
+  -- , text
+  -- , bytestring
+  -- , primitive
+  -- , vector
+  -- , entropy
+  -- , Chart:lens

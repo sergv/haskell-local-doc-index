@@ -41,7 +41,7 @@ case-insensitive
 -- cassava
 -- cereal
 charset
-Chart
+-- Chart
 --Chart-cairo
 -- Chart-diagrams
 clock
@@ -80,18 +80,20 @@ data-default-instances-old-locale
 data-reify
 deepseq
 -- derive
-diagrams
---diagrams-cairo
-diagrams-canvas
-diagrams-contrib
-diagrams-core
--- diagrams-graphviz
--- diagrams-gtk
--- diagrams-html5
-diagrams-lib
-diagrams-postscript
---diagrams-svg
--- diagrams-wx
+
+-- diagrams
+-- --diagrams-cairo
+-- diagrams-canvas
+-- -- diagrams-contrib
+-- diagrams-core
+-- -- diagrams-graphviz
+-- -- diagrams-gtk
+-- -- diagrams-html5
+-- diagrams-lib
+-- diagrams-postscript
+-- --diagrams-svg
+-- -- diagrams-wx
+
 Diff
 digest
 -- direct-sqlite
@@ -132,7 +134,7 @@ filepath
 fingertree
 fixed
 fmlist
-foundation
+-- foundation
 free
 fsnotify
 gauge
@@ -347,7 +349,7 @@ sdl2-ttf
 semigroupoids
 semigroups
 setenv
-set-extra
+-- set-extra
 SHA
 shake
 -- shelly
@@ -378,7 +380,7 @@ system-filepath
 tagged
 tagsoup
 tar
-tar-conduit
+-- tar-conduit
 tasty
 tasty-bench
 tasty-expected-failure
@@ -494,6 +496,9 @@ sfmt
 
 lsp-types
 lsp
-rope-utf16-splay
+-- rope-utf16-splay
 
 ghc-lib-parser
+
+cborg
+serialise

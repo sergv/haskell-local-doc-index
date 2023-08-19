@@ -247,11 +247,24 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
         if [[ "$pkg" == "ghc-boot-th-9.4.2" ]]; then
             pkg="ghc-boot-th-9.4.1"
         fi
+        if [[ "$pkg" == "ghc-boot-9.4.3" ]]; then
+            pkg="ghc-boot-9.4.1"
+        fi
+        if [[ "$pkg" == "ghc-boot-th-9.4.3" ]]; then
+            pkg="ghc-boot-th-9.4.1"
+        fi
         if [[ "$pkg" == "ghc-boot-th-8.10.7" ]]; then
             pkg="ghc-boot-th-8.10.2"
         fi
         if [[ "$pkg" == "hpc-0.6.1.0" ]]; then
             pkg="hpc-0.6.0.3"
+        fi
+
+        if [[ "$pkg" == "ghc-boot-9.6.2" ]]; then
+            pkg="ghc-boot-9.6.1"
+        fi
+        if [[ "$pkg" == "ghc-boot-th-9.6.2" ]]; then
+            pkg="ghc-boot-th-9.6.1"
         fi
 
         # Should be removed going forwards...

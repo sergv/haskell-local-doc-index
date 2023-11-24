@@ -3,7 +3,7 @@
 ad
 adjunctions
 aeson
-aeson-compat
+-- aeson-compat
 aeson-pretty
 ansi-terminal
 -- appar
@@ -180,7 +180,7 @@ hinotify
 -- hoopl
 hostname
 -- hourglass
-hpack
+-- hpack
 hpc
 hs-bibutils
 -- hscolour

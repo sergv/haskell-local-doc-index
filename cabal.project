@@ -27,6 +27,13 @@ constraints:
   , vector >= 0.13
   , Chart >= 1.9
 
+  , containers installed
+  , text installed
+  , Glob >= 0.10.2
+  , uvector < 0
+  , socks >= 0.6.1
+  , criterion >= 1.6.3.0
+
 package *
   documentation: True
   haddock-hyperlink-source: True
@@ -79,11 +86,13 @@ allow-newer:
   , assoc
   , base
   , bytestring
+  , deepseq
   , entropy
   , ghc-prim
   , mtl
   , primitive
   , template-haskell
+  , text
   , transformers
   , these
   , unix

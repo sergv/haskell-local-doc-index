@@ -14,7 +14,7 @@
           t    = pkgs.lib.trivial;
           hl   = pkgs.haskell.lib;
 
-          hpkgs = pkgs.haskell.packages.ghc961;
+          hpkgs = pkgs.haskell.packages.ghc981;
 
           ghc = hpkgs.ghc.override {
             enableDocs = true;
@@ -48,6 +48,8 @@
             pkgs.fontconfig
             pkgs.freetype
             pkgs.gd
+            pkgs.glib
+            pkgs.harfbuzz
             pkgs.libdeflate
             pkgs.libGLU
             pkgs.libjpeg
@@ -55,6 +57,7 @@
             pkgs.libtiff
             pkgs.libwebp
             pkgs.lzma
+            pkgs.pcre2
             pkgs.SDL2
             pkgs.SDL2_gfx
             pkgs.SDL2_image

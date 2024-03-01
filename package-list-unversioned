@@ -502,3 +502,4 @@ ghc-lib-parser
 
 cborg
 serialise
+file-io

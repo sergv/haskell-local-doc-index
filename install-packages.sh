@@ -68,12 +68,11 @@ fi
 
 action="${1:-all}"
 
-if ! [[ "$action" = "all" || "$action" = "install" || "$action" = "download" || "$action" = "update-tags" || "$action" = "generate-haddock-docs" || "$action" = "update-css" ]]; then
+if ! [[ "$action" = "all" || "$action" = "install" || "$action" = "download" || "$action" = "generate-haddock-docs" || "$action" = "update-css" ]]; then
     echo "Invalid action: $action." >&2
-    echo "Valid actions: install, download, update-tags, generate-haddock-docs, update-css, all" >&2
+    echo "Valid actions: install, download, generate-haddock-docs, update-css, all" >&2
     echo "  install - create local package db and install packages from ‘$package_list’ into it, using the latest LTS stackage snapshot" >&2
     echo "  download - get sources of all packages installed into local package db"
-    echo "  update-tags - regenerate tags file"
     echo "  generate-haddock-docs - create offline documentation for installed packages"
     echo "  update-css - update CSS theme file everywhere"
 fi
@@ -286,12 +285,6 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
     done | awk '!/^Win32-[0-9.]+$/' | (cd "$package_download_dir"; xargs cabal get)
     # Can’t build it
     (cd "$package_download_dir"; cabal get Win32)
-fi
-
-if [[ "$action" = "update-tags" || "$action" = "all" ]]; then
-    echo "Updating tags"
-    # time fast-tags -o "$root/tags" -v -R "$package_download_dir" --nomerge
-    ./update-tags.sh
 fi
 
 if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then

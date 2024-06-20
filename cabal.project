@@ -34,6 +34,12 @@ constraints:
   , socks >= 0.6.1
   , criterion >= 1.6.3.0
 
+  , hslogger >= 1.3
+
+  , stringsearch +base4
+  , stringsearch >= 0.3.6.6
+  , OpenGL >= 3.0.3.0
+
 package *
   documentation: True
   haddock-hyperlink-source: True
@@ -47,6 +53,15 @@ package *
   -- haddock-css: $haddock_css
 
 allow-newer:
+  -- , mmark:containers
+  -- , gloss-rendering:containers
+  -- , gloss:containers
+  -- , binary-tagged:containers
+  -- , structured:containers
+  , entropy:Cabal
+  -- , stringsearch:containers
+  -- , OpenGL:containers
+  , containers
   -- , containers
   -- , Cabal
   -- , HUnit

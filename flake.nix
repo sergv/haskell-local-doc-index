@@ -14,7 +14,7 @@
           t    = pkgs.lib.trivial;
           hl   = pkgs.haskell.lib;
 
-          hpkgs = pkgs.haskell.packages.ghc981;
+          hpkgs = pkgs.haskell.packages.ghc9101;
 
           ghc = hpkgs.ghc.override {
             enableDocs = true;
@@ -66,6 +66,21 @@
             pkgs.SDL2_sound
             pkgs.SDL2_ttf
             pkgs.zlib
+
+            # For glfw
+            pkgs.freeglut
+            # This gives us libGL
+            pkgs.libglvnd
+            # This gives us libGLU
+            pkgs.libGLU
+            pkgs.xorg.libX11
+
+            pkgs.xorg.libXi
+            pkgs.xorg.libXrandr
+            pkgs.xorg.libXxf86vm
+            pkgs.xorg.libXcursor
+            pkgs.xorg.libXinerama
+
           ];
 
       in {

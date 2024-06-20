@@ -32,7 +32,7 @@ haddock_theme="$(pwd)/themes/Solarized.theme/solarized.css"
 haddock_theme_dir="$(dirname "$haddock_theme")"
 
 # pkg_db_dir="$root/local/pkg-db.d"
-store_pkg_db_dir="$root/local-store/ghc-${ghc_version}/package.db/"
+store_pkg_db_dir="$root/local-store/ghc-${ghc_version}-inplace/package.db/"
 docs_dir="$root/docs"
 
 html_dir="html"
@@ -42,6 +42,11 @@ mkdir -p "$docs_html_dir"
 
 # Dir with package db, libraries, shared files
 local="$root/local"
+
+if [[ "${GHC_DOCS_ROOT:-x}" == x && -z "${IN_NIX_SHELL-}" ]]; then
+    echo "Must specify GHC_DOCS_ROOT under nix" >&2
+    exit 1
+fi
 
 # Present in binary installations but on NixOs is part of another package
 ghc_docs_root_default="$(dirname "$(which ghc)")/../share/doc/ghc-${ghc_version}/html/libraries/"
@@ -274,9 +279,16 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
             pkg="template-haskell-2.19.0.0"
         fi
 
+        case "$pkg" in
+            z-* | ghc-heap-* | libiserv-* | ghci* | integer-gmp* | system-cxx-std-lib* | utility-ht* | ghc-platform* | ghc-toolchain* )
+                echo "Skipping $pkg" >&2
+                continue
+                ;;
+        esac
+
         fs=( $(find "$package_download_dir" -maxdepth 1 -type d -name "${pkg}*") )
 
-        if [[ "${#fs[@]}" = 0 && ! -d "$pkg" && "$pkg" != z-* && "$pkg" != ghc-heap-* && "$pkg" != libiserv-* && "$pkg" != ghci* && "$pkg" != integer-gmp* && "$pkg" != system-cxx-std-lib* ]]; then
+        if [[ "${#fs[@]}" = 0 && ! -d "$pkg" ]]; then
             echo "Downloading $pkg" >&2
             echo "$pkg"
         else

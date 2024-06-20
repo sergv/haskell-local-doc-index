@@ -137,7 +137,7 @@ fmlist
 -- foundation
 free
 fsnotify
-gauge
+-- gauge
 gd
 generic-deriving
 generics-sop
@@ -342,7 +342,7 @@ safe-exceptions
 scientific
 sdl2
 -- sdl2-compositor
--- sdl2-gfx
+sdl2-gfx
 sdl2-image
 -- sdl2-mixer
 sdl2-ttf
@@ -503,3 +503,5 @@ ghc-lib-parser
 cborg
 serialise
 file-io
+
+GLFW-b

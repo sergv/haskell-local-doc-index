@@ -272,11 +272,11 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
         fi
 
         # Should be removed going forwards...
-        if [[ "$pkg" == "ghc-prim-0.10.0" ]]; then
-            pkg="ghc-prim-0.9.0"
+        if [[ "$pkg" == "ghc-boot-th-9.12.1" ]]; then
+            pkg="ghc-boot-th-9.10.1"
         fi
-        if [[ "$pkg" == "template-haskell-2.20.0.0" ]]; then
-            pkg="template-haskell-2.19.0.0"
+        if [[ "$pkg" == "haddock-api-2.30.0" ]]; then
+            pkg="haddock-api-2.29.1"
         fi
 
         case "$pkg" in

@@ -14,7 +14,7 @@
           t    = pkgs.lib.trivial;
           hl   = pkgs.haskell.lib;
 
-          hpkgs = pkgs.haskell.packages.ghc9101;
+          hpkgs = pkgs.haskell.packages.ghc9121;
 
           ghc = hpkgs.ghc.override {
             enableDocs = true;
@@ -50,13 +50,14 @@
             pkgs.gd
             pkgs.glib
             pkgs.harfbuzz
+            pkgs.lerc
             pkgs.libdeflate
             pkgs.libGLU
             pkgs.libjpeg
             pkgs.libpng
+            pkgs.libsysprof-capture
             pkgs.libtiff
             pkgs.libwebp
-            pkgs.lzma
             pkgs.pcre2
             pkgs.SDL2
             pkgs.SDL2_gfx
@@ -65,6 +66,7 @@
             pkgs.SDL2_net
             pkgs.SDL2_sound
             pkgs.SDL2_ttf
+            pkgs.xz
             pkgs.zlib
 
             # For glfw

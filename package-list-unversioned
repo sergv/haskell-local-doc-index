@@ -136,7 +136,7 @@ fixed
 fmlist
 -- foundation
 free
-fsnotify
+-- fsnotify
 -- gauge
 gd
 generic-deriving

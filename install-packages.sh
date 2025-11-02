@@ -19,21 +19,31 @@ if [[ -z "${IN_NIX_SHELL-}" ]]; then
     exit 1
 fi
 
+ghc=ghc-9.14
+
+ghc_commit=$($ghc --info | awk '/"Project Git commit id"/' | sed -re 's/^ ,\("Project Git commit id","|"\)$//g')
+
 root=$(cd "$(dirname "$0")" && pwd)
-ghc_version="$(ghc --numeric-version)"
+ghc_version="$("$ghc" --numeric-version)"
+
+ghc_repo="$root/ghc"
 
 cabal="cabal"
 # cabal="./cabal-3.7-no-asserts"
 # cabal="/tmp/dist/build/x86_64-linux/ghc-8.10.7/cabal-install-3.7.0.0/x/cabal/build/cabal/cabal"
 
-haddock=haddock
+haddock="haddock-${ghc_version}"
+ghc_pkg="ghc-pkg-${ghc_version}"
 
 haddock_theme="$(pwd)/themes/Solarized.theme/solarized.css"
 haddock_theme_dir="$(dirname "$haddock_theme")"
 
 # pkg_db_dir="$root/local/pkg-db.d"
-store_pkg_db_dir="$root/local-store/ghc-${ghc_version}-inplace/package.db/"
-docs_dir="$root/docs"
+
+unit_id=$($ghc --info | awk '/"Project Unit Id"/' | sed -re 's/^ ,\("Project Unit Id","|"\)$//g')
+
+store_pkg_db_dir="${root}/local-store/${unit_id}/package.db/"
+docs_dir="${root}/docs"
 
 html_dir="html"
 # Dir with with children like ‘base-4.9.0.0/Data-Functor.html’.
@@ -49,7 +59,7 @@ if [[ "${GHC_DOCS_ROOT:-x}" == x && -z "${IN_NIX_SHELL-}" ]]; then
 fi
 
 # Present in binary installations but on NixOs is part of another package
-ghc_docs_root_default="$(dirname "$(which ghc)")/../share/doc/ghc-${ghc_version}/html/libraries/"
+ghc_docs_root_default="$(dirname "$(which $ghc)")/../share/doc/ghc-${ghc_version}/html/libraries/"
 
 ghc_docs_root="${GHC_DOCS_ROOT:-$ghc_docs_root_default}"
 
@@ -182,7 +192,8 @@ EOF
         # -f new-base \
 
     execVerbose \
-        "$cabal" build \
+        "$cabal" build -w $ghc \
+        --builddir /tmp/dist \
         -j16 \
         --project-file "cabal.project" \
         --disable-split-objs \
@@ -202,7 +213,7 @@ EOF
 fi
 
 function get_packages {
-    ghc-pkg "${@}" list --simple-output | sed -e "s/ /\n/g" | sed -re "/^(${special_global_packages})-[0-9.]*$/d"
+    "$ghc_pkg" "${@}" list --simple-output | sed -e "s/ /\n/g" | sed -re "/^(${special_global_packages})-[0-9.]*$/d"
 }
 
 if [[ "$action" = "download" || "$action" = "all" ]]; then
@@ -273,17 +284,27 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
 
         # Should be removed going forwards...
         if [[ "$pkg" == "ghc-boot-th-9.12.1" ]]; then
-            pkg="ghc-boot-th-9.10.1"
+            pkg="ghc-boot-th-9.10.3"
         fi
         if [[ "$pkg" == "haddock-api-2.30.0" ]]; then
             pkg="haddock-api-2.29.1"
         fi
+        if [[ "$pkg" == "directory-1.3.10.0" ]]; then
+            pkg="directory-1.3.9.0"
+        fi
 
         case "$pkg" in
+            # Internal packages that shouldn’t be indexed
             z-* | ghc-heap-* | libiserv-* | ghci* | integer-gmp* | system-cxx-std-lib* | utility-ht* | ghc-platform* | ghc-toolchain* )
                 echo "Skipping $pkg" >&2
                 continue
                 ;;
+            # Packages bundled with GHC which we can get from the GHC
+            base-* | ghc-bignum-* | ghc-boot-* | ghc-boot-th-* | ghc-experimental-* | ghc-internal-* | ghc-prim-* | haddock-api-* | template-haskell-* )
+                echo "Skipping $pkg" >&2
+                continue
+                ;;
+
         esac
 
         fs=( $(find "$package_download_dir" -maxdepth 1 -type d -name "${pkg}*") )
@@ -295,8 +316,20 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
             echo "Skipping $pkg" >&2
         fi
     done | awk '!/^Win32-[0-9.]+$/' | (cd "$package_download_dir"; xargs cabal get)
-    # Can’t build it
-    (cd "$package_download_dir"; cabal get Win32)
+    # # Can’t build it
+    # (cd "$package_download_dir"; rm -rf Win32-*; cabal get Win32)
+
+    ( cd "$root/ghc"; git checkout "$ghc_commit"; git submodule update --init)
+
+    for x in libraries/base libraries/ghc-bignum libraries/ghc-boot libraries/ghc-boot-th libraries/ghc-experimental libraries/ghc-internal libraries/ghc-prim libraries/template-haskell libraries/Win32 utils/haddock/haddock-api; do
+        echo "Copying package $x from GHC sources"
+        pkg_src="${root}/ghc/${x}"
+        if [[ ! -d "${pkg_src}" ]]; then
+            echo "Cannot find sources for package $(basename "${x}") within GHC repository at ${pkg_src}" >&2
+            exit 1
+        fi
+        cp -r "${pkg_src}" "$package_download_dir"
+    done
 fi
 
 if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then

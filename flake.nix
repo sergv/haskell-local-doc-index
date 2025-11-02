@@ -6,20 +6,32 @@
     flake-utils = {
       url = "github:numtide/flake-utils";
     };
+    haskell-nixpkgs-fixes = {
+      url = "/home/sergey/projects/nix/haskell-nixpkgs-fixes";
+
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-unstable.follows = "nixpkgs";
+    };
+
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, haskell-nixpkgs-fixes }:
     flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs.legacyPackages.${system};
           t    = pkgs.lib.trivial;
           hl   = pkgs.haskell.lib;
 
-          hpkgs = pkgs.haskell.packages.ghc9121;
-
-          ghc = hpkgs.ghc.override {
+          ghc = haskell-nixpkgs-fixes.packages."${system}".ghcs.ghc9141.override {
             enableDocs = true;
-            # enableHaddockProgram = true;
           };
+
+          # hpkgs = pkgs.haskell.packages.ghc9121;
+          #
+          # ghc = hpkgs.ghc.override {
+          #   enableDocs = true;
+          #   # enableHaddockProgram = true;
+          # };
 
           # GTK-enabled deps
           # nativeDeps = [
@@ -96,7 +108,7 @@
           ] ++ map (x: if builtins.hasAttr "dev" x then x.dev else x) nativeDeps;
 
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath nativeDeps;
-          GHC_DOCS_ROOT = "${ghc.doc}/share/doc/ghc/html/libraries";
+          GHC_DOCS_ROOT = "${ghc.doc}/share/doc/ghc-native-bignum/html/libraries";
 
           # ... - everything mkDerivation has
         };

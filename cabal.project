@@ -4,9 +4,18 @@ store-dir:
 packages:
   generated/depends-on-all.cabal
 
+-- repository head.hackage.ghc.haskell.org
+--  url: https://ghc.gitlab.haskell.org/head.hackage/
+--  secure: True
+--  key-threshold: 3
+--  root-keys:
+--      f76d08be13e9a61a377a85e2fb63f4c5435d40f8feb3e12eb05905edb8cdea89
+--      7541f32a4ccca4f97aea3b22f5e593ba2c0267546016b992dfadcd2fe944e55d
+--      26021a13b401500c8eb2761ca95c61f2d625bfef951b939a8124ed12ecf07329
+
 constraints:
-  , Cabal installed
-  , bytestring installed
+  , any.Cabal installed
+  , any.bytestring installed
   , packedstring == 0
   , small-bytearray-builder >= 0.3.4
   , ip >= 1.7.3
@@ -27,8 +36,8 @@ constraints:
   , vector >= 0.13
   , Chart >= 1.9
 
-  , containers installed
-  , text installed
+  , any.containers installed
+  , any.text installed
   , Glob >= 0.10.2
   , uvector < 0
   , socks >= 0.6.1
@@ -40,13 +49,22 @@ constraints:
   , stringsearch >= 0.3.6.6
   , OpenGL >= 3.0.3.0
 
+  , ghc-lib-parser >= 9.14
+
+haddock-html-location: ../\$pkgid
+documentation: True
+haddock-hyperlink-source: True
+haddock-internal: True
+haddock-html: True
+haddock-hoogle: True
+
 package *
+  ghc-options: -fwrite-ide-info
   documentation: True
   haddock-hyperlink-source: True
   haddock-internal: True
   haddock-html: True
   haddock-hoogle: True
-  haddock-html-location: ../\$pkgid
   -- We’re fixing ocean.css definitions at the end anyway so it makes
   -- more sense to stick to the default linuwial which is used in base
   -- libraries as well and fix everything in the one go.
@@ -103,6 +121,7 @@ allow-newer:
   , bytestring
   , deepseq
   , entropy
+  , ghc-bignum
   , ghc-prim
   , mtl
   , primitive

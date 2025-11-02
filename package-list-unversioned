@@ -498,7 +498,7 @@ lsp-types
 lsp
 -- rope-utf16-splay
 
-ghc-lib-parser
+-- ghc-lib-parser
 
 cborg
 serialise

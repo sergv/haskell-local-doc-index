@@ -44,6 +44,7 @@ unit_id=$($ghc --info | awk '/"Project Unit Id"/' | sed -re 's/^ ,\("Project Uni
 
 store_pkg_db_dir="${root}/local-store/${unit_id}/package.db/"
 docs_dir="${root}/docs"
+# docs_dir="/tmp/docs"
 
 html_dir="html"
 # Dir with with children like ‘base-4.9.0.0/Data-Functor.html’.
@@ -83,14 +84,21 @@ fi
 
 action="${1:-all}"
 
-if ! [[ "$action" = "all" || "$action" = "install" || "$action" = "download" || "$action" = "generate-haddock-docs" || "$action" = "update-css" ]]; then
-    echo "Invalid action: $action." >&2
-    echo "Valid actions: install, download, generate-haddock-docs, update-css, all" >&2
-    echo "  install - create local package db and install packages from ‘$package_list’ into it, using the latest LTS stackage snapshot" >&2
-    echo "  download - get sources of all packages installed into local package db"
-    echo "  generate-haddock-docs - create offline documentation for installed packages"
-    echo "  update-css - update CSS theme file everywhere"
-fi
+case "$action" in
+    "all" | "install" | "download" | "generate-haddock-docs" | "update-css" | "fix-mathjax" )
+        :
+        ;;
+
+    * )
+        echo "Invalid action: $action." >&2
+        echo "Valid actions: install, download, generate-haddock-docs, update-css, all" >&2
+        echo "  install - create local package db and install packages from ‘$package_list’ into it, using the latest LTS stackage snapshot" >&2
+        echo "  download - get sources of all packages installed into local package db"
+        echo "  generate-haddock-docs - create offline documentation for installed packages"
+        echo "  update-css - update CSS theme file everywhere"
+        echo "  fix-mathjax - link all HTMLs to the static mathjax on my hard drive"
+        ;;
+esac
 
 # Utils
 
@@ -415,3 +423,32 @@ if [[ "$action" = "update-css" || "$action" = "all" ]]; then
 
     done < <(find "$docs_dir" -name 'linuwial.css' -print0)
 fi
+
+if [[ "$action" = "fix-mathjax" || "$action" = "all" ]]; then
+
+    mathjax_version="2.7.9"
+
+    mathjax_path="$docs_dir/MathJax-${mathjax_version}"
+
+    if [[ ! -e "$mathjax_path" ]]; then
+       ln -s "$root/MathJax-${mathjax_version}" "$mathjax_path"
+    fi
+
+    echo "Mathjax is at $mathjax_path"
+    # mathjax_abs_path="file://$mathjax_path"
+
+    while IFS= read -d $'\0' -r x ; do
+
+        echo "Fixing file $x"
+
+        chmod 0644 "$x"
+
+        mathjax_rel_path=$(realpath -m --relative-to "$(dirname "$x")" "$mathjax_path/MathJax.js")
+
+        sed -i -e "s,https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML,$mathjax_rel_path?config=TeX-AMS_SVG.js," "$x"
+
+        sed -i -e 's#/><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"##' "$x"
+
+    done < <(grep -l -F 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js' -r "$docs_dir" --null)
+fi
+

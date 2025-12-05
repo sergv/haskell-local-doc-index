@@ -656,4 +656,16 @@ ul.details-toggle {
   background-color: #dc322f;
 }
 
+.mathjax {
+  color: #839496; /* !important */
+  /* -webkit-filter: invert(100%);
+  filter: invert(100%); */
+}
+
+/*
+.MathJax {
+  color: #839496; !important
+}?8
+
+
 /* @end */

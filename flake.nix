@@ -8,7 +8,7 @@
     };
     haskell-nixpkgs-improvements = {
       url = "github:sergv/haskell-nixpkgs-improvements" ;
-ex      # url = "/home/sergey/projects/nix/haskell-nixpkgs-improvements";
+      # url = "/home/sergey/projects/nix/haskell-nixpkgs-improvements";
 
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nixpkgs-unstable.follows = "nixpkgs";
@@ -18,19 +18,25 @@ ex      # url = "/home/sergey/projects/nix/haskell-nixpkgs-improvements";
 
   outputs = { self, nixpkgs, flake-utils, haskell-nixpkgs-improvements }:
     flake-utils.lib.eachDefaultSystem (system:
-      let # pkgs = nixpkgs.legacyPackages.${system};
+      let pkgs = nixpkgs.legacyPackages."${system}";
 
-          pkgs = import nixpkgs {
-            inherit system;
-            config = haskell-nixpkgs-improvements.config.host;
-            overlays = [
-              haskell-nixpkgs-improvements.overlays.host
-            ];
-          };
+          # pkgs = import nixpkgs {
+          #   inherit system;
+          #   config = haskell-nixpkgs-improvements.config.host;
+          #   overlays = [
+          #     haskell-nixpkgs-improvements.overlays.host
+          #   ];
+          # };
 
-          ghcs = haskell-nixpkgs-improvements.lib.create-ghcs system pkgs null;
+          # ghcs = haskell-nixpkgs-improvements.lib.create-ghcs system pkgs null;
+          #
+          # ghc = ghcs.ghc.host.ghc9141.override {
+          #   enableDocs = true;
+          # };
 
-          ghc = ghcs.ghc.host.ghc9141.override {
+          packages = haskell-nixpkgs-improvements.packages."${system}";
+
+          ghc = packages.ghc9141.override {
             enableDocs = true;
           };
 
@@ -113,6 +119,7 @@ ex      # url = "/home/sergey/projects/nix/haskell-nixpkgs-improvements";
           nativeBuildInputs = [
             pkgs.pkg-config
             ghc
+            packages.cabal
           ] ++ map (x: if builtins.hasAttr "dev" x then x.dev else x) nativeDeps;
 
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath nativeDeps;

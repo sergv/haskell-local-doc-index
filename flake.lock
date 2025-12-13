@@ -184,14 +184,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1765582866,
-        "narHash": "sha256-2qGO4WIGacOFE0NwckWgZ+Dn7MCjaa0OCiyZxPpld68=",
-        "path": "/home/sergey/projects/nix/haskell-nixpkgs-improvements",
-        "type": "path"
+        "lastModified": 1765661323,
+        "narHash": "sha256-x5X0yhD+ch+logWBpOYs57l69xbUcKMoLBKxxNk/7PE=",
+        "owner": "sergv",
+        "repo": "haskell-nixpkgs-improvements",
+        "rev": "9028083682649076dcb94325d283fbcc171a987b",
+        "type": "github"
       },
       "original": {
-        "path": "/home/sergey/projects/nix/haskell-nixpkgs-improvements",
-        "type": "path"
+        "owner": "sergv",
+        "repo": "haskell-nixpkgs-improvements",
+        "type": "github"
       }
     },
     "haskellNix": {

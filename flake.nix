@@ -6,23 +6,31 @@
     flake-utils = {
       url = "github:numtide/flake-utils";
     };
-    haskell-nixpkgs-fixes = {
-      url = "/home/sergey/projects/nix/haskell-nixpkgs-fixes";
+    haskell-nixpkgs-improvements = {
+      url = "github:sergv/haskell-nixpkgs-improvements" ;
+ex      # url = "/home/sergey/projects/nix/haskell-nixpkgs-improvements";
 
-      inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nixpkgs-unstable.follows = "nixpkgs";
     };
 
   };
 
-  outputs = { self, nixpkgs, flake-utils, haskell-nixpkgs-fixes }:
+  outputs = { self, nixpkgs, flake-utils, haskell-nixpkgs-improvements }:
     flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
-          t    = pkgs.lib.trivial;
-          hl   = pkgs.haskell.lib;
+      let # pkgs = nixpkgs.legacyPackages.${system};
 
-          ghc = haskell-nixpkgs-fixes.packages."${system}".ghcs.ghc9141.override {
+          pkgs = import nixpkgs {
+            inherit system;
+            config = haskell-nixpkgs-improvements.config.host;
+            overlays = [
+              haskell-nixpkgs-improvements.overlays.host
+            ];
+          };
+
+          ghcs = haskell-nixpkgs-improvements.lib.create-ghcs system pkgs null;
+
+          ghc = ghcs.ghc.host.ghc9141.override {
             enableDocs = true;
           };
 

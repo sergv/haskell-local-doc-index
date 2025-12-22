@@ -327,7 +327,7 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
     # # Can’t build it
     # (cd "$package_download_dir"; rm -rf Win32-*; cabal get Win32)
 
-    ( cd "$root/ghc"; git checkout "$ghc_commit"; git submodule update --init)
+    ( cd "$root/ghc"; git checkout "$ghc_commit" || echo "Failed to find GHC commit $ghc_commit in repository $(pwd)" >&2 && exit 1; git submodule update --init)
 
     for x in libraries/base libraries/ghc-bignum libraries/ghc-boot libraries/ghc-boot-th libraries/ghc-experimental libraries/ghc-internal libraries/ghc-prim libraries/template-haskell libraries/Win32 utils/haddock/haddock-api; do
         echo "Copying package $x from GHC sources"

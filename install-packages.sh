@@ -434,12 +434,17 @@ fi
 
 if [[ "$action" = "fix-mathjax" || "$action" = "all" ]]; then
 
-    mathjax_version="2.7.9"
+    new_mathjax_version="2.7.9"
 
-    mathjax_path="$docs_dir/MathJax-${mathjax_version}"
+    if [[ ! -e "$root/MathJax-${new_mathjax_version}" ]]; then
+        echo "Failed to find MathJax at: '$root/MathJax-${new_mathjax_version}', check the intended MathJax version" >&2
+        exit 1
+    fi
+
+    mathjax_path="$docs_dir/MathJax-${new_mathjax_version}"
 
     if [[ ! -e "$mathjax_path" ]]; then
-       ln -s "$root/MathJax-${mathjax_version}" "$mathjax_path"
+       ln -s "$root/MathJax-${new_mathjax_version}" "$mathjax_path"
     fi
 
     echo "Mathjax is at $mathjax_path"
@@ -453,9 +458,13 @@ if [[ "$action" = "fix-mathjax" || "$action" = "all" ]]; then
 
         mathjax_rel_path=$(realpath -m --relative-to "$(dirname "$x")" "$mathjax_path/MathJax.js")
 
-        sed -i -e "s,https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML,$mathjax_rel_path?config=TeX-AMS_SVG.js," "$x"
+        cmds=$(cat <<EOF
+s#https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML#$mathjax_rel_path?config=TeX-AMS_SVG.js#
+s#/><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"##
+EOF
+)
 
-        sed -i -e 's#/><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"##' "$x"
+        sed -i -e "$cmds" "$x"
 
     done < <(grep -l -F 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js' -r "$docs_dir" --null)
 fi

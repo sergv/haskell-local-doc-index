@@ -35,21 +35,22 @@ cabal="cabal"
 haddock="haddock-${ghc_version}"
 ghc_pkg="ghc-pkg-${ghc_version}"
 
-haddock_theme="$(pwd)/themes/Solarized.theme/solarized.css"
-haddock_theme_dir="$(dirname "$haddock_theme")"
+haddock_theme_dir="$(pwd)/themes/Solarized.theme"
+
+# haddock_theme_dir="$(dirname "$haddock_theme")"
 
 # pkg_db_dir="$root/local/pkg-db.d"
 
 unit_id=$($ghc --info | awk '/"Project Unit Id"/' | sed -re 's/^ ,\("Project Unit Id","|"\)$//g')
 
 store_pkg_db_dir="${root}/local-store/${unit_id}/package.db/"
-docs_dir="${root}/docs"
-# docs_dir="/tmp/docs"
+docs_final_dir="${root}/docs"
 
-html_dir="html"
+# docs_dir="${root}/docs"
+docs_dir="/tmp/tmp-haskell-packages-workdir/docs"
+
 # Dir with with children like ‘base-4.9.0.0/Data-Functor.html’.
-docs_html_dir="$docs_dir/$html_dir"
-mkdir -p "$docs_html_dir"
+docs_html_dir="$docs_dir/html"
 
 # Dir with package db, libraries, shared files
 local="$root/local"
@@ -85,7 +86,7 @@ fi
 action="${1:-all}"
 
 case "$action" in
-    "all" | "install" | "download" | "generate-haddock-docs" | "update-css" | "fix-mathjax" )
+    "all" | "install" | "download" | "generate-haddock-docs" | "update-css" | "fix-mathjax" | "fix-dark-mode" | "copy-final-docs")
         :
         ;;
 
@@ -97,6 +98,8 @@ case "$action" in
         echo "  generate-haddock-docs - create offline documentation for installed packages"
         echo "  update-css - update CSS theme file everywhere"
         echo "  fix-mathjax - link all HTMLs to the static mathjax on my hard drive"
+        echo "  fix-dark-mode - add meta stanza to all htmls stating that they use dark mode do make DarkReader plugin not apply its darkening"
+        echo "  copy-final-docs - popuplate folder on permanent storage"
         ;;
 esac
 
@@ -124,6 +127,7 @@ function execVerbose {
 # Copy builtin docs
 if [[ "$action" = "install" || "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
     echo "Populating '$docs_html_dir' with builtin documentations"
+    mkdir -p "$docs_html_dir"
     for pkg in $(cd "$ghc_docs_root" && find . -maxdepth 1 -type d | sed -re "/^\.\/(rts)-[0-9.]*$/d"); do
         if [[ "$pkg" != "." ]]; then
             if [[ -d "$docs_html_dir/$pkg" ]]; then
@@ -131,8 +135,9 @@ if [[ "$action" = "install" || "$action" = "generate-haddock-docs" || "$action" 
             else
                 echo "Copying documentation for $pkg"
                 cp -r "$ghc_docs_root/$pkg" "$docs_html_dir"
-                chmod +w "$docs_html_dir/$pkg"
-                [[ -d "$docs_html_dir/$pkg/src" ]] && chmod +w "$docs_html_dir/$pkg/src"
+                chmod 0755 "$docs_html_dir/$pkg"
+                [[ -d "$docs_html_dir/$pkg/src" ]] && chmod 0755 "$docs_html_dir/$pkg/src"
+                find "$docs_html_dir/$pkg" -type f -exec chmod 0644 {} \;
                 # sudo chown -R sergey: "$docs_html_dir/$pkg"
             fi
         fi
@@ -325,7 +330,7 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
         fi
     done | awk '!/^Win32-[0-9.]+$/' | (cd "$package_download_dir"; xargs cabal get)
     # # Can’t build it
-    # (cd "$package_download_dir"; rm -rf Win32-*; cabal get Win32)
+    # (cd "$package_download_dir"; rm -r Win32-*; cabal get Win32)
 
     pushd "$root/ghc" >/dev/null
     if ! git checkout "$ghc_commit"; then
@@ -340,11 +345,11 @@ if [[ "$action" = "download" || "$action" = "all" ]]; then
     for x in libraries/base libraries/ghc-bignum libraries/ghc-boot libraries/ghc-boot-th libraries/ghc-experimental libraries/ghc-internal libraries/ghc-prim libraries/template-haskell libraries/Win32 utils/haddock/haddock-api; do
         echo "Copying package $x from GHC sources"
         pkg_src="${root}/ghc/${x}"
-        if [[ ! -d "${pkg_src}" ]]; then
+        if [[ ! -d "$pkg_src" ]]; then
             echo "Cannot find sources for package $(basename "${x}") within GHC repository at ${pkg_src}" >&2
             exit 1
         fi
-        cp -r "${pkg_src}" "$package_download_dir"
+        cp -r "$pkg_src" "$package_download_dir"
     done
 fi
 
@@ -382,50 +387,75 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
             fi
         done < <(find "${docs_html_dir}" -type f -name '*.haddock' | sort | tr '\n' '\0')
 
-        echo "Running haddock"
+        if [[ ! -f "$docs_dir/index.html" ]]; then
+            echo "Running haddock"
 
-        global_pkg_db="$(ghc-pkg list --global | head -n1)"
+            global_pkg_db="$(ghc-pkg list --global | head -n1)"
 
-        # Passing explicit package dbs makes even unpatched haddock generate
-        # package names.
-        # cf https://github.com/commercialhaskell/stack/pull/3226
-        "$haddock" \
-            --verbosity=3 \
-            --pretty-html \
-            --gen-contents \
-            --gen-index \
-            --odir="$docs_dir" \
-            --optghc=-package-db="$global_pkg_db" \
-            --optghc=-package-db="$store_pkg_db_dir" \
-            --title="Standalone Haskell Documentation" \
-            --hyperlinked-source \
-            $haddock_args
+            # Passing explicit package dbs makes even unpatched haddock generate
+            # package names.
+            # cf https://github.com/commercialhaskell/stack/pull/3226
+            "$haddock" \
+                --verbosity=3 \
+                --pretty-html \
+                --gen-contents \
+                --gen-index \
+                --odir="$docs_dir" \
+                --optghc=-package-db="$global_pkg_db" \
+                --optghc=-package-db="$store_pkg_db_dir" \
+                --title="Standalone Haskell Documentation" \
+                --hyperlinked-source \
+                $haddock_args
+        fi
     popd >/dev/null
 fi
 
 if [[ "$action" = "update-css" || "$action" = "all" ]]; then
+
+    local_haddock_theme_dir="$docs_dir/$(basename "$haddock_theme_dir")"
+    cp -r "$haddock_theme_dir" "$local_haddock_theme_dir"
+
+    for dedup_resource in "haddock-bundle.min.js" "quick-jump.css" "highlight.js"; do
+      src="$(find /tmp/tmp-haskell-packages-workdir/docs/ -name "$dedup_resource" | awk 'NR < 2')"
+
+      if [[ -f "$src" && ! -h "$src" ]]; then
+          cp "$src" "$local_haddock_theme_dir"
+      fi
+    done
+
+
     # Fix linuwial that comes with haddocs for precompiled packages (e.g. base).
     while IFS= read -d $'\0' -r css ; do
 
-        echo "$css"
-        # if [[ ! -h "$css" ]]; then
-        rm -f "$css"
-        ln -s "$haddock_theme" "$css"
-        # fi
+        if [[ "$(dirname $css)" = "$local_haddock_theme_dir" ]]; then
+            # Don’t overwrite the source for everything
+            continue
+        fi
 
-        source_css_dir="$(dirname "$css")/src"
+        css_dir=$(dirname "$css")
+        source_css_dir="$css_dir/src"
+
+        haddock_theme_css_rel=$(realpath -m --relative-to "$css_dir" "$local_haddock_theme_dir/solarized.css")
+
+        echo "$css"
+
+        rm "$css"
+        ln -s "$haddock_theme_css_rel" "$css"
+
         source_css="${source_css_dir}/style.css"
 
         if [[ -d "$source_css_dir" ]]; then
-            rm -f "$source_css"
-            ln -s "$haddock_theme_dir/../solarized.css" "$source_css"
+            source_theme_rel=$(realpath -m --relative-to "$source_css_dir" "$local_haddock_theme_dir/solarized-source.css")
+            rm "$source_css"
+            ln -s "$source_theme_rel" "$source_css"
         fi
 
-        for haddock_resource in hslogo-16.png minus.gif plus.gif synopsis.png; do
+        for haddock_resource in hslogo-16.png minus.gif plus.gif synopsis.png haddock-bundle.min.js quick-jump.css src/highlight.js; do
             dest="$(dirname "$css")/$haddock_resource"
-            if [[ ! -h "$dest" ]]; then
-                rm -f "$dest"
-                ln -s "$haddock_theme_dir/$haddock_resource" "$dest"
+            if [[ -e "$dest" ]]; then
+                src_rel=$(realpath -m --relative-to "$css_dir/$(dirname "$haddock_resource")" "$local_haddock_theme_dir/$(basename "$haddock_resource")")
+                rm "$dest"
+                ln -s "$src_rel" "$dest"
             fi
         done
 
@@ -444,7 +474,7 @@ if [[ "$action" = "fix-mathjax" || "$action" = "all" ]]; then
     mathjax_path="$docs_dir/MathJax-${new_mathjax_version}"
 
     if [[ ! -e "$mathjax_path" ]]; then
-       ln -s "$root/MathJax-${new_mathjax_version}" "$mathjax_path"
+       cp -r "$root/MathJax-${new_mathjax_version}" "$mathjax_path"
     fi
 
     echo "Mathjax is at $mathjax_path"
@@ -452,9 +482,7 @@ if [[ "$action" = "fix-mathjax" || "$action" = "all" ]]; then
 
     while IFS= read -d $'\0' -r x ; do
 
-        echo "Fixing file $x"
-
-        chmod 0644 "$x"
+        echo "Fixing mathjax in file $x"
 
         mathjax_rel_path=$(realpath -m --relative-to "$(dirname "$x")" "$mathjax_path/MathJax.js")
 
@@ -463,9 +491,32 @@ s#https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS
 s#/><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"##
 EOF
 )
-
         sed -i -e "$cmds" "$x"
 
     done < <(grep -l -F 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js' -r "$docs_dir" --null)
 fi
+
+# Not strictly needed since I can just disable DarkReader on all local files and that’s enough.
+# if [[ "$action" = "fix-dark-mode" || "$action" = "all" ]]; then
+#     while IFS= read -d $'\0' -r x ; do
+#
+#         echo "Fixing dark mode in file $x"
+#
+#         cmds=$(cat <<EOF
+# s#></head#><meta name="color-scheme" content="dark" /></head#
+# EOF
+# )
+#         sed -i -e "$cmds" "$x"
+#
+#     done < <(find "$docs_dir" -name '*.html' -print0)
+# fi
+
+if [[ "$action" = "copy-final-docs" || "$action" = "all" ]]; then
+
+    echo "Copying final docs to $docs_final_dir"
+
+    cp -r "$docs_dir" "$docs_final_dir"
+
+fi
+
 

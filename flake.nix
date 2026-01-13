@@ -36,6 +36,8 @@
 
           packages = haskell-nixpkgs-improvements.packages."${system}";
 
+          hiedb = haskell-nixpkgs-improvements.haskell-package-sets.x86_64-linux.host.ghc914.hiedb;
+
           ghc = packages.ghc9141.override {
             enableDocs = true;
           };
@@ -134,6 +136,8 @@
             pkgs.pkg-config
             ghc
             packages.cabal
+
+            hiedb
           ] ++ map (x: if builtins.hasAttr "dev" x then x.dev else x) nativeDeps;
 
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath nativeDeps;

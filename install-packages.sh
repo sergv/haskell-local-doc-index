@@ -86,7 +86,7 @@ fi
 action="${1:-all}"
 
 case "$action" in
-    "all" | "install" | "download" | "generate-haddock-docs" | "update-css" | "fix-mathjax" | "fix-dark-mode" | "copy-final-docs")
+    "all" | "install" | "download" | "generate-haddock-docs" | "update-css" | "fix-mathjax" | "remove-synopsis" | "fix-dark-mode" | "copy-final-docs")
         :
         ;;
 
@@ -98,6 +98,7 @@ case "$action" in
         echo "  generate-haddock-docs - create offline documentation for installed packages"
         echo "  update-css - update CSS theme file everywhere"
         echo "  fix-mathjax - link all HTMLs to the static mathjax on my hard drive"
+        echo "  remove-synopsis - remove synopsis nodes so they don't confuse search in firefox"
         echo "  fix-dark-mode - add meta stanza to all htmls stating that they use dark mode do make DarkReader plugin not apply its darkening"
         echo "  copy-final-docs - popuplate folder on permanent storage"
         ;;
@@ -475,6 +476,7 @@ if [[ "$action" = "fix-mathjax" || "$action" = "all" ]]; then
 
     if [[ ! -e "$mathjax_path" ]]; then
        cp -r "$root/MathJax-${new_mathjax_version}" "$mathjax_path"
+       rm -rv "$mathjax_path/test/"
     fi
 
     echo "Mathjax is at $mathjax_path"
@@ -495,6 +497,18 @@ EOF
 
     done < <(grep -l -F 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js' -r "$docs_dir" --null)
 fi
+
+if [[ "$action" = "remove-synopsis" || "$action" = "all" ]]; then
+    while IFS= read -d $'\0' -r x ; do
+
+        echo "Removing synopsis from $x"
+
+        xmlstarlet --huge ed --inplace --delete "//*[@id = 'synopsis']" "$x" 2>/dev/null ||
+            xmlstarlet --huge ed --inplace --delete "//*[@id = 'synopsis']" "$x"
+
+    done < <(find "$docs_dir" -name '*.html' -print0)
+fi
+
 
 # Not strictly needed since I can just disable DarkReader on all local files and that’s enough.
 # if [[ "$action" = "fix-dark-mode" || "$action" = "all" ]]; then

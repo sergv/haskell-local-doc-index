@@ -1,0 +1,85 @@
+From e52bad0a3e5e97695dec781ec937b1223963851d Mon Sep 17 00:00:00 2001
+From: Sergey Vinokurov <serg.foo@gmail.com>
+Date: Tue, 13 Jan 2026 21:56:15 +0000
+Subject: [PATCH] =?UTF-8?q?Make=20XML=5FPARSE=5FHUGE=20be=20able=20to=20ha?=
+ =?UTF-8?q?ndle=20100kb=20documents.=20Apparently=20some=20developers=20co?=
+ =?UTF-8?q?nsider=20that=20huge=20but=20probably=20they=20shouldn=E2=80=99?=
+ =?UTF-8?q?t=20be=20considered=20competent=20developers=20instead?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ parser.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/parser.c b/parser.c
+index 6e7621a8..48bcc403 100644
+--- a/parser.c
++++ b/parser.c
+@@ -1896,7 +1896,7 @@ xmlCtxtPushInput(xmlParserCtxt *ctxt, xmlParserInput *value)
+     if ((ctxt == NULL) || (value == NULL))
+         return(-1);
+ 
+-    maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 40 : 20;
++    maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 1000 : 20;
+ 
+     if (ctxt->inputNr >= ctxt->inputMax) {
+         xmlParserInputPtr *tmp;
+@@ -1990,7 +1990,7 @@ nodePush(xmlParserCtxt *ctxt, xmlNode *value)
+         return(0);
+ 
+     if (ctxt->nodeNr >= ctxt->nodeMax) {
+-        int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 2048 : 256;
++        int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 65536 : 256;
+         xmlNodePtr *tmp;
+         int newSize;
+ 
+@@ -3459,7 +3459,7 @@ xmlParseNmtoken(xmlParserCtxt *ctxt) {
+ static void
+ xmlExpandPEsInEntityValue(xmlParserCtxtPtr ctxt, xmlSBuf *buf,
+                           const xmlChar *str, int length, int depth) {
+-    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 40 : 20;
++    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 1000 : 20;
+     const xmlChar *end, *chunk;
+     int c, l;
+ 
+@@ -3690,7 +3690,7 @@ error:
+  */
+ static void
+ xmlCheckEntityInAttValue(xmlParserCtxtPtr ctxt, xmlEntityPtr pent, int depth) {
+-    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 40 : 20;
++    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 1000 : 20;
+     const xmlChar *str;
+     unsigned long expandedSize = pent->length;
+     int c, flags;
+@@ -3800,7 +3800,7 @@ static int
+ xmlExpandEntityInAttValue(xmlParserCtxtPtr ctxt, xmlSBuf *buf,
+                           const xmlChar *str, xmlEntityPtr pent, int normalize,
+                           int *inSpace, int depth, int check) {
+-    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 40 : 20;
++    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 1000 : 20;
+     int c, chunkSize;
+     int normChange = 0;
+ 
+@@ -6269,7 +6269,7 @@ mem_error:
+ static xmlElementContentPtr
+ xmlParseElementChildrenContentDeclPriv(xmlParserCtxtPtr ctxt, int openInputNr,
+                                        int depth) {
+-    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 2048 : 256;
++    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 65536 : 256;
+     xmlElementContentPtr ret = NULL, cur = NULL, last = NULL, op = NULL;
+     const xmlChar *elem;
+     xmlChar type = 0;
+@@ -9695,7 +9695,7 @@ xmlParseElement(xmlParserCtxt *ctxt) {
+  */
+ static int
+ xmlParseElementStart(xmlParserCtxtPtr ctxt) {
+-    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 2048 : 256;
++    int maxDepth = (ctxt->options & XML_PARSE_HUGE) ? 65536 : 256;
+     const xmlChar *name;
+     const xmlChar *prefix = NULL;
+     const xmlChar *URI = NULL;
+-- 
+2.51.2
+

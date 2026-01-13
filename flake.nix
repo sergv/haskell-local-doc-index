@@ -68,7 +68,22 @@
           #   pkgs.zlib
           # ];
 
+          xmlstarlet-pkg =
+            (pkgs.xmlstarlet.override (old: {
+              libxml2 = old.libxml2.overrideAttrs (old2: {
+                patches = (old2.patches or []) ++ [
+                  ./patches/0001-Make-XML_PARSE_HUGE-be-able-to-handle-100kb-document.patch
+                ];
+              });
+            })).overrideAttrs (old: {
+              patches = (old.patches or []) ++ [
+                ./patches/xmlstarlet-huge.diff
+              ];
+            });
+
           nativeDeps = [
+            xmlstarlet-pkg
+
             pkgs.curl.dev
             pkgs.expat
             pkgs.fontconfig
@@ -108,7 +123,6 @@
             pkgs.xorg.libXxf86vm
             pkgs.xorg.libXcursor
             pkgs.xorg.libXinerama
-
           ];
 
       in {

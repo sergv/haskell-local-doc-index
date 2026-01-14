@@ -417,7 +417,7 @@ if [[ "$action" = "update-css" || "$action" = "all" ]]; then
     echo cp -r "$haddock_theme_dir" "$docs_dir"
     cp -rv "$haddock_theme_dir" "$docs_dir"
 
-    for dedup_resource in "haddock-bundle.min.js" "quick-jump.css" "highlight.js"; do
+    for dedup_resource in "haddock-bundle.min.js" "quick-jump.min.js" "quick-jump.css" "highlight.js"; do
       src="$(find /tmp/tmp-haskell-packages-workdir/docs/ -name "$dedup_resource" | awk 'NR < 2')"
 
       if [[ -f "$src" && ! -h "$src" ]]; then
@@ -452,8 +452,9 @@ if [[ "$action" = "update-css" || "$action" = "all" ]]; then
             ln -s "$source_theme_rel" "$source_css"
         fi
 
-        for haddock_resource in hslogo-16.png minus.gif plus.gif synopsis.png haddock-bundle.min.js quick-jump.css src/highlight.js; do
-            dest="$(dirname "$css")/$haddock_resource"
+        for haddock_resource in hslogo-16.png minus.gif plus.gif synopsis.png haddock-bundle.min.js quick-jump.min.js quick-jump.css src/highlight.js; do
+            dest="$(dirname "$css")/$haddock_resource
+"
             if [[ -e "$dest" ]]; then
                 src_rel=$(realpath -m --relative-to "$css_dir/$(dirname "$haddock_resource")" "$local_haddock_theme_dir/$(basename "$haddock_resource")")
                 rm "$dest"

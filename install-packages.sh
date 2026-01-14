@@ -414,7 +414,8 @@ fi
 if [[ "$action" = "update-css" || "$action" = "all" ]]; then
 
     local_haddock_theme_dir="$docs_dir/$(basename "$haddock_theme_dir")"
-    cp -r "$haddock_theme_dir" "$local_haddock_theme_dir"
+    echo cp -r "$haddock_theme_dir" "$docs_dir"
+    cp -rv "$haddock_theme_dir" "$docs_dir"
 
     for dedup_resource in "haddock-bundle.min.js" "quick-jump.css" "highlight.js"; do
       src="$(find /tmp/tmp-haskell-packages-workdir/docs/ -name "$dedup_resource" | awk 'NR < 2')"

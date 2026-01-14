@@ -505,8 +505,9 @@ if [[ "$action" = "remove-synopsis" || "$action" = "all" ]]; then
 
         echo "Removing synopsis from $x"
 
-        xmlstarlet --huge ed --inplace --delete "//*[@id = 'synopsis']" "$x" 2>/dev/null ||
-            xmlstarlet --huge ed --inplace --delete "//*[@id = 'synopsis']" "$x"
+        # Pass --pf to preserve whitespace, important for source code htmls.
+        xmlstarlet --huge ed --pf --inplace --delete "//*[@id = 'synopsis']" "$x" 2>/dev/null ||
+            xmlstarlet --huge ed --pf --inplace --delete "//*[@id = 'synopsis']" "$x"
 
     done < <(find "$docs_dir" -name '*.html' -print0)
 fi

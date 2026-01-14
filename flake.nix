@@ -78,9 +78,24 @@
                 ];
               });
             })).overrideAttrs (old: {
-              patches = (old.patches or []) ++ [
+              src = pkgs.fetchFromGitHub {
+                owner  = "random-random-stuff";
+                repo   = "xmlstar";
+                rev    = "a7228161756b47e1348a6ad97bda10e511cb546a";
+                sha256 = "sha256-auz0o0sTaoKPbvaFDYJwt1ZnoyfWcdjyNUc5JV6hkHU="; #pkgs.lib.fakeSha256;
+              };
+              patches = [
                 ./patches/xmlstarlet-huge.diff
+                ./patches/xmlstarlet-disable-docs.patch
+                (pkgs.fetchurl {
+                  name = "libxml-2.14.patch";
+                  url  = "https://github.com/termux/termux-packages/raw/39135f3f1190268d127b998c2c6040d9af611ba5/packages/xmlstarlet/libxml2-2.14-attribute-unused.patch";
+                  hash = "sha256-zHkUQsrhPLWI3kdfCITbcixpBmDRmxSM2Viz5R+8q5E=";
+                })
               ];
+              configureFlags =
+                (old.configureFlags or []) ++
+                ["--disable-build-docs"];
             });
 
           nativeDeps = [

@@ -1,0 +1,17 @@
+diff --git i/Makefile.am w/Makefile.am
+index 1f3ba33..4e13ec1 100644
+--- i/Makefile.am
++++ w/Makefile.am
+@@ -73,10 +73,10 @@ $(generated_usage_sources) : usage2c.awk
+ 
+ 
+ # doc
+-include doc/doc.mk
++# include doc/doc.mk
+ 
+ man_MANS = $(manpage)
+-dist_doc_DATA = $(userguide_gen) doc/html.css $(txtguide)
++# dist_doc_DATA = $(userguide_gen) doc/html.css $(txtguide)
+ EXTRA_DIST += $(manpage_src) $(userguide_src) $(txtguide_src)
+ EXTRA_DIST += $(buildfiles_docs) $(manpage)
+ 

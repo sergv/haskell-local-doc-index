@@ -19,6 +19,11 @@ if [[ -z "${IN_NIX_SHELL-}" ]]; then
     exit 1
 fi
 
+function execVerbose() {
+    # echo "${@}"
+    "${@}"
+}
+
 ghc=ghc-9.14
 
 ghc_commit=$($ghc --info | awk '/"Project Git commit id"/' | sed -re 's/^ ,\("Project Git commit id","|"\)$//g')
@@ -203,7 +208,17 @@ EOF
         # --haddock-hyperlink-source \
         # "--haddock-css=$haddock_css" \
 
+        # --docdir="../\$pkgid" \
+        # --htmldir="../\$pkgid" \
+
         # -f new-base \
+
+        # These went to cabal.project
+        # --haddock-hoogle \
+        # --haddock-html \
+        # --haddock-hyperlink-source \
+        # "--haddock-html-location=../\$pkgid" \
+        # --haddock-internal \
 
     execVerbose \
         "$cabal" build -w $ghc \
@@ -396,7 +411,7 @@ if [[ "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
             # Passing explicit package dbs makes even unpatched haddock generate
             # package names.
             # cf https://github.com/commercialhaskell/stack/pull/3226
-            "$haddock" \
+            execVerbose "$haddock" \
                 --verbosity=3 \
                 --pretty-html \
                 --gen-contents \

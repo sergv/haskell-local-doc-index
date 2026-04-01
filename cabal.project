@@ -51,15 +51,9 @@ constraints:
 
   , ghc-lib-parser >= 9.14
 
-haddock-html-location: ../\$pkgid
-documentation: True
-haddock-hyperlink-source: True
-haddock-internal: True
-haddock-html: True
-haddock-hoogle: True
-
 package *
   ghc-options: -fwrite-ide-info
+  haddock-html-location: ../\$pkgid
   documentation: True
   haddock-hyperlink-source: True
   haddock-internal: True

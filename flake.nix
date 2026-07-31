@@ -38,7 +38,7 @@
 
           hiedb = haskell-nixpkgs-improvements.haskell-package-sets.x86_64-linux.host.ghc914.hiedb;
 
-          ghc = packages.ghc9141.override {
+          ghc = packages.ghc914.override {
             enableDocs = true;
           };
 

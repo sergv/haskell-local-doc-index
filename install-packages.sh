@@ -91,7 +91,7 @@ fi
 action="${1:-all}"
 
 case "$action" in
-    "all" | "install" | "download" | "generate-haddock-docs" | "update-css" | "fix-mathjax" | "remove-synopsis" | "fix-dark-mode" | "copy-final-docs")
+    "all" | "install" | "download" | "copy-builtin-haddock-docs" | "generate-haddock-docs" | "update-css" | "fix-mathjax" | "remove-synopsis" | "fix-dark-mode" | "copy-final-docs")
         :
         ;;
 
@@ -100,6 +100,7 @@ case "$action" in
         echo "Valid actions: install, download, generate-haddock-docs, update-css, all" >&2
         echo "  install - create local package db and install packages from ‘$package_list’ into it, using the latest LTS stackage snapshot" >&2
         echo "  download - get sources of all packages installed into local package db"
+        echo "  copy-builtin-haddock-docs - get offline documentation for packages bundled with ghc"
         echo "  generate-haddock-docs - create offline documentation for installed packages"
         echo "  update-css - update CSS theme file everywhere"
         echo "  fix-mathjax - link all HTMLs to the static mathjax on my hard drive"
@@ -131,20 +132,25 @@ function execVerbose {
 
 
 # Copy builtin docs
-if [[ "$action" = "install" || "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
+if [[ "$action" = "install" || "$action" = "copy-builtin-haddock-docs" || "$action" = "generate-haddock-docs" || "$action" = "all" ]]; then
     echo "Populating '$docs_html_dir' with builtin documentations"
     mkdir -p "$docs_html_dir"
     for pkg in $(cd "$ghc_docs_root" && find . -maxdepth 1 -type d | sed -re "/^\.\/(rts)-[0-9.]*$/d"); do
+        pkg="$(echo "$pkg" | sed -re 's,^\./,,')"
         if [[ "$pkg" != "." ]]; then
             if [[ -d "$docs_html_dir/$pkg" ]]; then
                 echo "Skipping $pkg - documentation already present"
             else
-                echo "Copying documentation for $pkg"
-                cp -r "$ghc_docs_root/$pkg" "$docs_html_dir"
+                echo "Copying documentation for $pkg into $docs_html_dir/$pkg"
+                cp -r "$ghc_docs_root/$pkg" "$docs_html_dir/$pkg"
                 chmod 0755 "$docs_html_dir/$pkg"
                 [[ -d "$docs_html_dir/$pkg/src" ]] && chmod 0755 "$docs_html_dir/$pkg/src"
                 find "$docs_html_dir/$pkg" -type f -exec chmod 0644 {} \;
-                # sudo chown -R sergey: "$docs_html_dir/$pkg"
+                sudo chown -R sergey: "$docs_html_dir/$pkg"
+            fi
+            clean_pkg=$(echo "$pkg" | sed -re 's/-[0-9a-fA-F]+$//')
+            if [[ ! -d "$docs_html_dir/$clean_pkg" ]]; then
+                (cd "$docs_html_dir"; ln -s "$pkg" "$clean_pkg")
             fi
         fi
     done

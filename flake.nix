@@ -143,7 +143,7 @@
           ];
 
       in {
-        devShell = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
 
           buildInputs = nativeDeps;
 

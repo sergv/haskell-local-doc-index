@@ -10,7 +10,9 @@ set -u
 # propagate errors from all parts of pipes
 set -o pipefail
 
-rm -rf all-packages/ generated/ local* docs.bak docs dist-newstyle build.log
+set -e
+
+rm -rf all-packages/ generated/ local* docs.bak docs dist-newstyle build.log /tmp/tmp-haskell-packages-workdir
 
 exit 0
 

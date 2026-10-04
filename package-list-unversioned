@@ -505,3 +505,5 @@ serialise
 file-io
 
 GLFW-b
+
+text-builder-linear
